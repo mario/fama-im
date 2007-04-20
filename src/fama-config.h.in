@@ -1,0 +1,8 @@
+#ifndef FAMA_CONFIG_H
+#define FAMA_CONFIG_H
+
+#define DATA_DIR_PREFIX "%(data_dir_prefix)s"
+
+#define VERSION_STRING "%(version_string)s"
+
+#endif

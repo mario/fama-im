@@ -1,0 +1,6 @@
+0.0.1 Sat Oct 14 13:56:06 CEST 2006 - Jonas Broms <sanoix@gmail.com>
+	* Initial SVN import
+	* Added scons build scripts (originally from telepathy-inspector)
+	* Added functions in fama-conn-manager.c
+	* Added functions in fama-dbus.c
+	* Added data-type FamaConnectionManager in fama-common.h

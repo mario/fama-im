@@ -1,0 +1,32 @@
+import os
+
+from build_functions import BuildConfigHeader
+
+
+source_files = Split("""ui-contactlist.c
+                        ui-interface.c
+                        ui-keyfile.c
+                        main.c
+                        ui-signal.c
+			ui-color.c
+			ui-log.c
+                        ui-textwrap.c
+			ui-stdin-handler.c
+			ui-command-line.c
+			ui-command.c
+			ui-window.c
+                        ui-utf8.c""")
+
+Import ('env options_filename')
+
+env.Append (LIBS = ['panelw', 'ncursesw'])
+env.Append(CPPPATH = env['NCURSESW'])
+
+install_dir = os.path.join (env['PREFIX'], 'bin')
+
+env.Depends('fama-config.h', os.path.join ('..', 'config_header_vars'))
+env.Command('fama-config.h', 'fama-config.h.in', BuildConfigHeader)
+
+program = env.Program ('fama', source_files)
+program_install = env.Install (install_dir, program)
+env.Alias ('install', program_install)
