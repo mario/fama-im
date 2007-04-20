@@ -1,0 +1,1 @@
+ -bad -bap -bbo -nbc -br -ce -cdw -i4 -ip4 -sob -ts4 -ut -ts4 -ncs -nbc -di1 -lp -ppi0 -l130 -bbo
