@@ -1,4 +1,5 @@
 #include <locale.h>
+#include <glib/gstdio.h>
 
 #include "common.h"
 #include "fama-config.h"
@@ -59,7 +60,7 @@ init_all(gpointer data)
 	if (keyfile_read() == FALSE)
 		return FALSE;
 
-	a = g_key_file_get_integer(keyfile_get(), "ncurses",
+	a = g_key_file_get_integer(keyfile_get(), "core",
 				   "contact_list_width", &err);
 	if (err != NULL) {
 		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
@@ -73,7 +74,7 @@ init_all(gpointer data)
 
 	g_get_charset(&charset);
 	set_interface_encoding(g_strdup(charset));
-	c = g_key_file_get_string(keyfile_get(), "ncurses", "charset", &err);
+	c = g_key_file_get_string(keyfile_get(), "core", "charset", &err);
 	if (err != NULL) {
 		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
 			g_warning("cannot get character charset: %s",
@@ -85,6 +86,23 @@ init_all(gpointer data)
 	}
 	g_message("Using charset '%s'", get_interface_encoding());
 
+	c = g_key_file_get_string(keyfile_get(), "core",
+				  "redirect_stderr", &err);
+	if (err) {
+		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
+			g_warning("cannot get 'redirect_stderr': %s",
+				  err->message);
+
+		g_clear_error(&err);
+	} else if (!err && c) {
+		g_message("Redirecting stderr to %s", c);
+		g_freopen(c, "w", stderr);
+	}
+
+	/*
+	 * Initialize manager factory
+	 */
+	manager_factory_init();
 
 	/*
 	 * Initialize the interface

@@ -1,11 +1,11 @@
+#include "common.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include "common.h"
 
 void
-log_get_time(gchar *buf, gsize size)
+log_get_time(gchar * buf, gsize size)
 {
 	struct tm *ptr;
 	time_t tm;
@@ -27,13 +27,14 @@ log_function(const gchar * log_domain, GLogLevelFlags log_level,
 	log_get_time(time, sizeof(time) - 1);
 
 	/*
-	 * Log to stderr 
+	 * Log to stdout 
 	 */
 	if ((w = window_get_index(0)) == NULL) {
-		if (log_level == G_LOG_LEVEL_WARNING)
-			fprintf(stderr, "** %s Warning: %s\n", time, message);
+		if (log_level == G_LOG_LEVEL_WARNING ||
+		    log_level == G_LOG_LEVEL_CRITICAL)
+			printf("** %s Warning: %s\n", time, message);
 		else
-			fprintf(stderr, "** %s Message: %s\n", time, message);
+			printf("** %s Message: %s\n", time, message);
 
 		return;
 	}
@@ -49,7 +50,8 @@ log_function(const gchar * log_domain, GLogLevelFlags log_level,
 
 	wcs[wlen] = L'\0';
 
-	if (log_level == G_LOG_LEVEL_WARNING) {
+	if (log_level == G_LOG_LEVEL_WARNING ||
+	    log_level == G_LOG_LEVEL_CRITICAL) {
 		swprintf(title, sizeof(title) - 1, L"[%s] Warning", time);
 		window_add_message(w, title, A_BOLD | COLOR_PAIR(1), wcs);
 	} else {
@@ -70,6 +72,6 @@ log_init()
 	g_assert(stdscr != NULL);
 
 	g_log_set_handler(G_LOG_DOMAIN,
-			  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_MESSAGE,
-			  log_function, NULL);
+			  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_MESSAGE |
+			  G_LOG_LEVEL_CRITICAL, log_function, NULL);
 }

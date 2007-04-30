@@ -106,7 +106,7 @@ window_append_rows(FamaWindow * w, GPtrArray * m, gint attr)
 
 		if (i == 0)
 			wattron(w->ncwin, attr);
-		else 
+		else
 			wattron(w->ncwin, c->message_text);
 
 		waddwstr(w->ncwin, g_ptr_array_index(m, i));

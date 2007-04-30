@@ -11,6 +11,7 @@ env = Environment(ENV = os.environ)
 libraries = [
              ['glib-2.0', '2.0.0'],
              ['gobject-2.0', '2.0.0'],
+	     ['libtapioca-client-glib-0.14', '0.14'],
             ]
 
 options_filename = 'build_options'

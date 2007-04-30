@@ -5,6 +5,12 @@
 GHashTable *table = NULL;
 
 
+gboolean command_func_window(gint argc, gchar ** argv);
+gboolean command_func_list(gint argc, gchar ** argv);
+gboolean command_func_help(gint argc, gchar ** argv);
+gboolean command_func_connect(gint argc, gchar ** argv);
+gboolean command_func_quit(gint argc, gchar ** argv);
+
 /*
  * This function is for command_func_help()'s private use
  */
@@ -65,7 +71,7 @@ command_func_quit(gint argc, gchar ** argv)
  * Switch between windows
  */
 gboolean
-command_func_window(gint argc, gchar **argv)
+command_func_window(gint argc, gchar ** argv)
 {
 	FamaWindow *w;
 
@@ -105,6 +111,8 @@ command_init()
 	command_add("help", command_func_help);
 	command_add("quit", command_func_quit);
 	command_add("window", command_func_window);
+	command_add("connect", command_func_connect);
+	command_add("list", command_func_list);
 }
 
 /*

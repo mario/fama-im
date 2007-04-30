@@ -4,11 +4,13 @@
 
 #define CONFIG_FILE_NAME ".famaconfig"
 
-const gchar *default_keyfile = "[ncurses]\n"
+const gchar *default_keyfile = "[core]\n"
 	"contact_list_width=30\n"
 	"\n# If commented, Fama uses the charset of the current locale\n"
 	"#charset=UTF-8\n"
-	"[colors]\n"
+	"\n# Suppress messages to stderr\n"
+	"redirect_stderr=/dev/null\n"
+	"\n[colors]\n"
 	"# Available colors are\n"
 	"# red, green, blue, black, white\n"
 	"# cyan, yellow, magenta and default\n"

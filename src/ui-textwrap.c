@@ -94,5 +94,3 @@ textwrap_append(GPtrArray * m, const wchar_t * text, guint max_width)
 
 	return m->len;
 }
-
-

@@ -35,7 +35,9 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 				 * Send message to the conversation at the current
 				 * window.
 				 */
-				window_add_message(window_get_current(), L"Test output", A_BOLD, cmdbuf);
+				window_add_message(window_get_current(),
+						   L"Test output", A_BOLD,
+						   cmdbuf);
 			} else {
 				/*
 				 * Convert wchar_t to gchar and then into an argument list
@@ -53,7 +55,9 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 					 */
 					if (command_execute(argc, argv) ==
 					    FALSE)
-						g_warning("Command '%s' not found!", argv[0]);
+						g_warning
+							("Command '%s' not found!",
+							 argv[0]);
 
 					g_strfreev(argv);
 				}

@@ -10,6 +10,9 @@
 #include <ncurses.h>
 #include <panel.h>
 
+#include <tapioca/tpa-base.h>
+#include <tapioca/tpa-client.h>
+
 typedef enum {
 	WindowTypeMain,
 	WindowTypeConversation,
@@ -127,5 +130,10 @@ gboolean command_execute(gint, gchar **);
 /* Color.c */
 void color_init();
 ColorSettings *color_get();
+
+/* Factory-manager.c */
+TpaManagerFactory *manager_factory_get();
+void manager_factory_init();
+
 
 #endif
