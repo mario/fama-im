@@ -71,7 +71,7 @@ gint contactlist_get_width();
 void contactlist_draw();
 void contactlist_destroy();
 void contactlist_add_category(const wchar_t *);
-void contactlist_add_item(guint, const wchar_t *, int);
+void contactlist_add_item(const wchar_t *, const wchar_t *, int);
 void contactlist_scroll(gint);
 
 /* Utf8.c */

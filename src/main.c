@@ -143,37 +143,6 @@ init_all(gpointer data)
 	 * Draw the interface
 	 */
 
-	/*
-	 * Test stuff 
-	 */
-	contactlist_add_category(L"MSN");
-	contactlist_add_item(0, L"A 0 只B只C只只只只只只只只只", 0);
-	contactlist_add_item(0, L"Hello", 0);
-
-	contactlist_add_category(L"Jabber");
-	contactlist_add_item(1, L"Lalalal alal", 0);
-	contactlist_add_item(1, L"Bababab", 0);
-
-	contactlist_add_category(L"ICQ");
-	contactlist_add_item(2, L"asdasddlo", 0);
-	contactlist_add_item(2, L"Mahatmao", 0);
-	contactlist_add_item(2, L"Leningrad", 0);
-	contactlist_add_item(2, L"asdasddlo", 0);
-	contactlist_add_item(2, L"Mahatmao", 0);
-	contactlist_add_item(2, L"Leningrad", 0);
-	contactlist_add_item(2, L"asdasddlo", 0);
-	contactlist_add_item(2, L"Mahatmao", 0);
-	contactlist_add_item(2, L"Leningrad", 0);
-	contactlist_add_item(2, L"asdasddlo", 0);
-	contactlist_add_item(2, L"Mahatmao", 0);
-	contactlist_add_item(2, L"Leningrad", 0);
-	contactlist_add_item(2, L"asdasddlo", 0);
-	contactlist_add_item(2, L"Mahatmao", 0);
-	contactlist_add_item(2, L"Leningrad", 0);
-	contactlist_add_item(2, L"asdasddlo", 0);
-	contactlist_add_item(2, L"Mahatmao", 0);
-	contactlist_add_item(2, L"Leningrad", 0);
-
 	draw_interface();
 
 	/*

@@ -1,5 +1,6 @@
 #include "common.h"
 
+
 struct list_item {
 	wchar_t *text;
 	gint attr;
@@ -11,7 +12,7 @@ WINDOW *clistwin = NULL;
 PANEL *clistpanel = NULL;
 
 gint contactlist_width = 30;
-int list_offset = 0, list_marked = 0;
+gint list_offset = 0, list_marked = 0;
 
 gint
 contactlist_count_rows()
@@ -205,10 +206,34 @@ contactlist_add_category(const wchar_t * title)
 }
 
 void
-contactlist_add_item(guint category_index, const wchar_t * text, int attr)
+contactlist_add_item(const wchar_t * category, const wchar_t * text, int attr)
 {
 	struct list_item *c;
 	GPtrArray *array = NULL;
+	GSList *categoryTmp = categories;
+	wchar_t *title;
+	int i = 0;
+
+	for (i = 0; categoryTmp != NULL; i++) {
+
+		array = (GPtrArray *) categoryTmp->data;
+		g_assert(array != NULL);
+
+		title = (wchar_t *) ((struct list_item *)
+				     g_ptr_array_index(array, 0))->text;
+		g_assert(title != NULL);
+
+		if (wcscmp(title, category) == 0)
+			break;
+
+		categoryTmp = g_slist_next(categoryTmp);
+	}
+
+	if (categoryTmp == NULL) {
+		contactlist_add_category(category);
+		contactlist_add_item(category, text, attr);
+		return;
+	}
 
 	c = g_new(struct list_item, 1);
 
@@ -217,7 +242,7 @@ contactlist_add_item(guint category_index, const wchar_t * text, int attr)
 
 	c->attr = attr;
 
-	array = (GPtrArray *) g_slist_nth_data(categories, category_index);
+	array = (GPtrArray *) g_slist_nth_data(categories, i);
 	g_assert(array != NULL);
 	g_ptr_array_add(array, (gpointer) c);
 }
@@ -232,4 +257,61 @@ gint
 contactlist_get_width()
 {
 	return contactlist_width;
+}
+
+guint
+contactlist_presence_to_attr(TpaContactPresence p)
+{
+	ColorSettings *c = color_get();
+
+	switch (p)
+	{
+	case TPA_PRESENCE_OFFLINE:
+	case TPA_PRESENCE_HIDDEN:
+		return c->status_offline;
+	case TPA_PRESENCE_AVAILABLE:
+		return c->status_available;
+	case TPA_PRESENCE_AWAY:
+		return c->status_away;
+	case TPA_PRESENCE_XA:
+		return c->status_idle;
+	case TPA_PRESENCE_BUSY:
+		return c->status_busy;
+	default:
+		break;
+	}
+
+	return c->status_other;
+}
+
+void contactlist_presence_updated_cb (TpaContact *contact, TpaContactPresence *presence, gchar *message)
+{
+
+}
+
+void
+contactlist_add_contacts (const gchar *category, GPtrArray *contacts)
+{
+	TpaContactPresence contact_presence;
+	const gchar *contact_alias;
+	wchar_t alias[512], group[512];
+
+	TpaContact *contact;
+	int i;
+
+	for (i = 0; i < contacts->len; i++) {
+		contact = g_ptr_array_index (contacts, i);
+
+		g_signal_connect (G_OBJECT (contact), "presence-updated",
+					G_CALLBACK (contactlist_presence_updated_cb), NULL);
+		
+		contact_alias = tpa_contact_base_get_alias (TPA_CONTACT_BASE (contact));
+		contact_presence = tpa_contact_base_get_presence (TPA_CONTACT_BASE (contact));
+
+	        utf8_to_wchar(contact_alias, alias, strlen(contact_alias));
+	        utf8_to_wchar(category, group, strlen(category));
+
+		contactlist_add_item (group, alias, 
+					contactlist_presence_to_attr(contact_presence));
+	}
 }
