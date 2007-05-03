@@ -10,11 +10,6 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 	gsize size;
 	gint argc;
 
-	/*
-	 * Read from the stdin as long as data is available. The reading end is 
-	 * also in non-blocking mode, so if we have consumed all data, 
-	 * the read returns G_IO_STATUS_AGAIN. 
-	 */
 	while (get_wch(&unichar) != ERR) {
 
 		if (unichar == 0x0a || unichar == KEY_ENTER) {

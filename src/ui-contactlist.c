@@ -284,9 +284,13 @@ contactlist_presence_to_attr(TpaContactPresence p)
 	return c->status_other;
 }
 
-void contactlist_presence_updated_cb (TpaContact *contact, TpaContactPresence *presence, gchar *message)
+void contactlist_presence_updated_cb (TpaContact *contact, TpaContactPresence presence, gchar *message)
 {
+	const gchar *contact_alias;
 
+	contact_alias = tpa_contact_base_get_alias (TPA_CONTACT_BASE (contact));
+
+	g_message("%s changed status to %d: %s", contact_alias, presence, message);
 }
 
 void
@@ -314,4 +318,5 @@ contactlist_add_contacts (const gchar *category, GPtrArray *contacts)
 		contactlist_add_item (group, alias, 
 					contactlist_presence_to_attr(contact_presence));
 	}
+	contactlist_draw();
 }
