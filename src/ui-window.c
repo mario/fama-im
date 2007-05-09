@@ -86,6 +86,7 @@ window_new(FamaWindowType type)
 	w->messages = g_ptr_array_new();
 	w->type = type;
 	w->title = NULL;
+	w->channel = NULL;
 	w->is_updated = TRUE;
 
 	g_ptr_array_add(window_list, w);

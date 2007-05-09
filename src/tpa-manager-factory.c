@@ -17,3 +17,23 @@ manager_factory_init()
 	if (!factory)
 		g_error("failed to create Connection Manager Factory!");
 }
+
+void
+manager_factory_destroy()
+{
+	GPtrArray *managers = tpa_manager_factory_get_all_managers(factory);
+
+	if (managers != NULL) {
+		int i;
+
+		for (i = 0; i < managers->len; i++)
+			g_object_unref(g_ptr_array_index(managers, i));
+
+		g_ptr_array_free(managers, TRUE);
+	}
+
+	if (factory != NULL) {
+		g_object_unref(factory);
+		factory = NULL;
+	}
+}

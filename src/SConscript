@@ -21,7 +21,8 @@ source_files = Split("""main.c
 			ui-command-connect.c
 
 			tpa-connection.c
-			tpa-manager-factory.c""")
+			tpa-manager-factory.c
+			tpa-channel.c""")
 
 Import ('env options_filename')
 

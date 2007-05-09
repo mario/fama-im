@@ -5,10 +5,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 {
 	GError *err = NULL;
 	gunichar unichar;
-	gchar mbseq[32], *mbscmd, **argv;
-	wchar_t wchar[3], *cmdbuf;
-	gsize size;
-	gint argc;
+	wchar_t *cmdbuf;
 
 	while (get_wch(&unichar) != ERR) {
 
@@ -19,21 +16,37 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			cmdbuf = commandline_get_buffer();
 
 			if (cmdbuf[0] == L'\0') {
+				FamaContactListItem *a;
+
 				/*
 				 * Start conversation with selected contact
 				 */
+				a = contactlist_get_selected();
+				tpa_connection_create_channel (a->connection, TPA_CHANNEL_TYPE_TEXT, TPA_CHANNEL_TARGET (a->contact));
+
 				g_message
-					("In the future this will start a new chat"
-					 " with the selected contact");
+					("%p: Creating channel..", a->connection);
 			} else if (cmdbuf[0] != L'/') {
+				FamaWindow *win;
+
 				/*
 				 * Send message to the conversation at the current
 				 * window.
 				 */
-				window_add_message(window_get_current(),
-						   L"Test output", A_BOLD,
-						   cmdbuf);
+
+				win = window_get_current();
+
+				if (win->channel != NULL) {
+					gchar *contents;
+
+					contents = utf8_from_wchar(cmdbuf, NULL, 0);
+					channel_send_message(TPA_TEXT_CHANNEL(win->channel), contents);
+					g_free(contents);
+				}
 			} else {
+				gchar *mbscmd, **argv;
+				gint argc;
+
 				/*
 				 * Convert wchar_t to gchar and then into an argument list
 				 */
@@ -80,6 +93,10 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			 * Ignore for the time being 
 			 */
 		} else {
+			gchar mbseq[32];
+			wchar_t wchar[3];
+			gsize size;
+
 			size = g_unichar_to_utf8(unichar, mbseq);
 			mbseq[size] = '\0';
 

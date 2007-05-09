@@ -1,3 +1,7 @@
+/* TODO:
+ * Make utf8_to_wchar use dynamic allocation!!
+ */
+
 #include <stdlib.h>
 #include <string.h>
 

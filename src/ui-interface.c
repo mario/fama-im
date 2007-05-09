@@ -28,16 +28,6 @@ init_interface()
 		mainWin = window_new(WindowTypeMain);
 		window_set_title(mainWin, L"Console window");
 		window_set_current(mainWin);
-
-		// Remove following rows later
-		mainWin = window_new(WindowTypeConversation);
-		window_set_title(mainWin, L"Test window 1");
-		mainWin = window_new(WindowTypeConversation);
-		window_set_title(mainWin, L"Test window 2");
-		mainWin = window_new(WindowTypeConversation);
-		window_set_title(mainWin, L"Test window 3");
-		mainWin = window_new(WindowTypeConversation);
-		window_set_title(mainWin, L"Test window 4");
 	}
 
 }

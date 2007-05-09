@@ -1,10 +1,16 @@
 #include "common.h"
+#include <string.h>
 
-#include <tapioca/tpa-base.h>
-#include <tapioca/tpa-client.h>
+static void
+status_changed_cb(TpaConnection *, TpaConnectionStatus, TpaConnectionStatusReason);
 
-static void status_changed_cb(TpaConnection * conn, guint status, guint reason);
-static void channel_created_cb(TpaConnection * conn, TpaChannel * channel);
+GPtrArray *connections = NULL;
+
+GPtrArray *
+connection_get_connections()
+{
+	return connections;
+}
 
 TpaConnection *
 connection_connect(gchar * account, gchar * password)
@@ -59,6 +65,11 @@ connection_connect(gchar * account, gchar * password)
 	 */
 	tpa_connection_connect(conn);
 
+	if (connections == NULL)
+		connections = g_ptr_array_new();
+
+	g_ptr_array_add(connections, conn);
+
 	return conn;
 }
 
@@ -108,38 +119,54 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 		TpaUserContact *user;
 		TpaContactList *list;
 		GPtrArray *contacts;
+		GPtrArray *channels;
+		TpaContactPresence contact_presence;
+		const gchar *contact_alias;
+		wchar_t alias[512];
+
+		TpaContact *contact;
+		int i;
+
 
 		g_message("%s: Connected!", tpa_connection_get_protocol(conn));
 
-		tpa_connection_get_open_channels(conn);
+		/*
+		 * Get contact-list 
+		 */
 		list = tpa_connection_get_contactlist(conn);
 		contacts = tpa_contact_list_get_known(list);
+		for (i = 0; i < contacts->len; i++) {
+			contact = g_ptr_array_index(contacts, i);
+
+			g_signal_connect(G_OBJECT(contact), "presence-updated",
+					 G_CALLBACK
+					 (contactlist_presence_updated_cb),
+					 NULL);
+
+			contact_alias =
+				tpa_contact_base_get_alias(TPA_CONTACT_BASE
+							   (contact));
+			contact_presence =
+				tpa_contact_base_get_presence(TPA_CONTACT_BASE
+							      (contact));
+
+			utf8_to_wchar(contact_alias, alias,
+				      strlen(contact_alias));
+
+			contactlist_add_item(conn, contact, alias,
+					     contactlist_presence_to_attr
+					     (contact_presence));
+		}
+		contactlist_draw();
+
+		channels = tpa_connection_get_open_channels(conn);
 		user = tpa_connection_get_user_contact(conn);
 		tpa_user_contact_set_capabilities(user, TPA_CAPABILITY_TEXT);
-		contactlist_add_contacts (tpa_connection_get_protocol(conn), contacts);
 	}
 	if (status == TPA_CONNECTION_STATUS_DISCONNECTED) {
 		g_message("Disconnected.");
 		connection_handle_reason(reason);
+		g_object_unref(conn);
 	}
 }
 
-static gboolean
-channel_play_cb(gpointer data)
-{
-	TpaStreamChannel *stream = TPA_STREAM_CHANNEL(data);
-
-	tpa_stream_channel_join(stream);
-	return FALSE;
-}
-
-static void
-channel_created_cb(TpaConnection * conn, TpaChannel * channel)
-{
-	g_message("Got channel-created signal from TpaConnection\nchannel: %p",
-		  channel);
-
-	if (tpa_channel_get_channel_type(channel) == TPA_CHANNEL_TYPE_STREAM) {
-		g_timeout_add(10000, channel_play_cb, channel);
-	}
-}

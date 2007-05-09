@@ -53,6 +53,9 @@ deliver_signal(GIOChannel * source, GIOCondition cond, gpointer d)
 		case SIGWINCH:
 			redraw_interface();
 			break;
+		case SIGINT:
+			stop_main_loop();
+			break;
 		default:
 			break;
 

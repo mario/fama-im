@@ -26,6 +26,8 @@ typedef struct {
 	GPtrArray *messages;
 	FamaWindowType type;
 	gboolean is_updated;
+
+	TpaChannel *channel;
 } FamaWindow;
 
 typedef struct {
@@ -33,6 +35,13 @@ typedef struct {
 	wchar_t *title;
 	wchar_t *message;
 } FamaMessage;
+
+typedef struct _FamaContactListItem {
+        TpaContact *contact;
+        TpaConnection *connection;
+        wchar_t *text;
+        gint attr;
+} FamaContactListItem;
 
 
 typedef struct {
@@ -70,9 +79,12 @@ void contactlist_set_width(gint);
 gint contactlist_get_width();
 void contactlist_draw();
 void contactlist_destroy();
-void contactlist_add_category(const wchar_t *);
-void contactlist_add_item(const wchar_t *, const wchar_t *, int);
+void contactlist_add_item(TpaConnection *, TpaContact *, const wchar_t *, int);
 void contactlist_scroll(gint);
+void contactlist_presence_updated_cb(TpaContact *, TpaContactPresence, gchar *);
+guint contactlist_presence_to_attr(TpaContactPresence);
+FamaContactListItem *contactlist_get_selected();
+
 
 /* Utf8.c */
 wchar_t *utf8_to_wchar(const gchar *, wchar_t *, gsize);
@@ -134,6 +146,10 @@ ColorSettings *color_get();
 /* Factory-manager.c */
 TpaManagerFactory *manager_factory_get();
 void manager_factory_init();
+
+/* Channel.c */
+void channel_send_message (TpaTextChannel *, gchar *);
+void channel_created_cb(TpaConnection * conn, TpaChannel * channel);
 
 
 #endif
