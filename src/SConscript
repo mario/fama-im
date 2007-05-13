@@ -11,11 +11,14 @@ source_files = Split("""main.c
 			ui-color.c
 			ui-log.c
                         ui-textwrap.c
+                        ui-statusbar.c
 			ui-stdin-handler.c
 			ui-command-line.c
 			ui-command.c
 			ui-window.c
                         ui-utf8.c
+			ui-clock.c
+			ui-util.c
 
 			ui-command-list.c
 			ui-command-connect.c

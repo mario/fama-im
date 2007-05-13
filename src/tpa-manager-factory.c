@@ -15,7 +15,9 @@ manager_factory_init()
 	factory = tpa_manager_factory_new();
 
 	if (!factory)
-		g_error("failed to create Connection Manager Factory!");
+		g_error("Failed to create Connection Manager Factory!\n"
+			"You probably have to start a D-Bus session..");
+		
 }
 
 void

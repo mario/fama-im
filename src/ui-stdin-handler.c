@@ -21,7 +21,9 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 				/*
 				 * Start conversation with selected contact
 				 */
-				a = contactlist_get_selected();
+				if ((a = contactlist_get_selected()) == NULL)
+					break;
+
 				tpa_connection_create_channel (a->connection, TPA_CHANNEL_TYPE_TEXT, TPA_CHANNEL_TARGET (a->contact));
 
 				g_message

@@ -70,11 +70,14 @@ void destroy_interface();
 void init_interface();
 void draw_interface();
 void redraw_interface();
-
+gboolean interface_is_initialized();
 int get_max_y();
 int get_max_x();
 
+#define BORDER ' '
+
 /* Contactlist.c */
+void contactlist_init();
 void contactlist_set_width(gint);
 gint contactlist_get_width();
 void contactlist_draw();
@@ -124,11 +127,14 @@ void window_append_rows(FamaWindow *, GPtrArray *, gint);
 void window_add_message(FamaWindow *, wchar_t *, gint, wchar_t *);
 FamaWindow *window_get_current();
 FamaWindow *window_get_index(gint);
+FamaWindow *window_find_channel (TpaChannel *c);
 void window_set_current(FamaWindow *);
 void window_set_title(FamaWindow *, wchar_t *);
 void window_draw_title_bar();
 void window_destroy(FamaWindow *);
 void window_resize_all();
+gchar *window_create_status_string();
+
 
 /* Log.c */
 void log_init();
@@ -151,5 +157,14 @@ void manager_factory_init();
 void channel_send_message (TpaTextChannel *, gchar *);
 void channel_created_cb(TpaConnection * conn, TpaChannel * channel);
 
+/* Clock.c */
+gboolean clock_cb (gpointer data);
+const gchar *clock_get_time();
+
+/* Statusbar */
+void statusbar_draw();
+
+/* Util.c */
+int mvwaddwstr_with_maxwidth(WINDOW *win, int y, int x, const wchar_t *wstr, int max);
 
 #endif

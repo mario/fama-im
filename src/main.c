@@ -96,7 +96,7 @@ init_all(gpointer data)
 
 		g_clear_error(&err);
 	} else if (!err && c) {
-		g_message("Redirecting stderr to %s", c);
+		g_message("Redirecting stderr to %s, thus supressing error messages\n", c);
 		g_freopen(c, "w", stderr);
 	}
 
@@ -110,6 +110,11 @@ init_all(gpointer data)
 	 */
 
 	init_interface();
+
+	/*
+	 * Start the clock for interface use
+	 */
+	clock_cb(NULL);
 
 	/*
 	 * Initialize message-logger

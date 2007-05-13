@@ -5,23 +5,72 @@
 GPtrArray *window_list = NULL;
 FamaWindow *current_window = NULL;
 
+/*
+ * Create a status-string for use in the status-bar
+ */
+
+gchar *
+window_create_status_string()
+{
+	FamaWindow *win;
+	gchar **list;
+	gchar *status_str;
+	gint i, j;
+
+	list = g_new(gchar *, window_list->len + 1);
+
+	for (i=0, j=0; i<window_list->len; i++) {
+		win = g_ptr_array_index(window_list, i);
+
+		if (win->is_updated)
+			list[j++] = g_strdup_printf("%d", i);
+	}
+
+	list[j] = NULL;
+
+	status_str = g_strjoinv (", ", list);
+	g_strfreev(list);
+
+	return status_str;
+}
+
+
+/*
+ * Return the window associated with the channel 'c'
+ */
+
+FamaWindow *
+window_find_channel (TpaChannel *channel)
+{
+	FamaWindow *win = NULL;
+	gint i;
+
+	if (window_list == NULL)
+		return NULL;
+
+	for (i = 0; i < window_list->len; i++) {
+		win = g_ptr_array_index(window_list, i);
+
+		if (win->channel == channel)
+			break;
+
+		win = NULL;
+	}
+
+	return win;
+}
+
 void
 window_draw_title_bar()
 {
-	gint l, w;
 	ColorSettings *c = color_get();
 
 	attron(A_UNDERLINE | A_BOLD | c->window_title);
 	mvhline(1, 0, ' ', WINDOW_WIDTH);
 
-	if (current_window->title != NULL) {
+	if (current_window->title != NULL)
+		mvwaddwstr_with_maxwidth(stdscr, 1, 2, current_window->title, WINDOW_WIDTH - 2);
 
-		for (l = 0, w = 2;
-		     w < WINDOW_WIDTH && current_window->title[l] != L'\0'; l++)
-			w += wcwidth(current_window->title[l]);
-
-		mvaddnwstr(1, 2, current_window->title, l);
-	}
 	attrset(A_NORMAL);
 }
 
@@ -45,6 +94,7 @@ window_set_current(FamaWindow * w)
 
 	top_panel(w->ncpanel);
 	window_draw_title_bar();
+	statusbar_draw();
 
 	update_panels();
 	doupdate();
@@ -137,7 +187,12 @@ window_add_message(FamaWindow * w, wchar_t * title, gint attr, wchar_t * str)
 
 	g_ptr_array_add(w->messages, message);
 
-	w->is_updated = (current_window == w) ? TRUE : FALSE;
+	if (current_window == w) {
+		w->is_updated = FALSE;
+	} else {
+		w->is_updated = TRUE;
+		statusbar_draw();
+	}
 
 	rows = textwrap_new(title);
 	textwrap_append(rows, str, WINDOW_WIDTH - 2);

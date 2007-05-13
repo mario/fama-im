@@ -5,26 +5,15 @@
 #include <time.h>
 
 void
-log_get_time(gchar * buf, gsize size)
-{
-	struct tm *ptr;
-	time_t tm;
-
-	tm = time(NULL);
-	ptr = localtime(&tm);
-	strftime(buf, size, "%H:%M:%S", ptr);
-}
-
-void
 log_function(const gchar * log_domain, GLogLevelFlags log_level,
 	     const gchar * message, gpointer user_data)
 {
 	FamaWindow *w;
-	gchar time[32];
+	const gchar *time;
 	wchar_t *wcs, title[128];
 	gint slen, wlen;
 
-	log_get_time(time, sizeof(time) - 1);
+	time = clock_get_time();
 
 	/*
 	 * Log to stdout 

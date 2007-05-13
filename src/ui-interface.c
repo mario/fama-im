@@ -1,8 +1,14 @@
 #include "common.h"
 
-#define BORDER ' '
 
-int max_x, max_y;
+gint max_x, max_y;
+gboolean is_initialized = FALSE;
+
+gboolean
+interface_is_initialized()
+{
+	return is_initialized;
+}
 
 void
 init_interface()
@@ -19,6 +25,7 @@ init_interface()
 
 	color_init();
 	commandline_init();
+	contactlist_init();
 
 	/*
 	 * Only create a new main-window if there is no
@@ -30,6 +37,7 @@ init_interface()
 		window_set_current(mainWin);
 	}
 
+	is_initialized = TRUE;
 }
 
 void
@@ -40,6 +48,8 @@ destroy_interface()
 	erase();
 	refresh();
 	endwin();
+
+	is_initialized = FALSE;
 }
 
 void
@@ -59,6 +69,12 @@ draw_interface()
 	mvhline(max_y - 2, 0, BORDER, max_x);
 	mvaddwstr(0, (max_x - 12) / 2, L"F A M A  I M");
 	attroff(A_REVERSE | c->borders);
+
+        attron(A_UNDERLINE | A_BOLD | c->window_title);
+	mvhline(1, max_x - contactlist_get_width() + 1, ' ', contactlist_get_width());
+	mvaddwstr(1, max_x - contactlist_get_width() + 2, L"Contacts");
+	attroff(A_UNDERLINE | A_BOLD | c->window_title);
+
 	update_panels();
 	doupdate();
 
@@ -74,6 +90,11 @@ draw_interface()
 	 * Draw command-line
 	 */
 	commandline_draw();
+
+	/*
+	 * Draw status-bar
+	 */
+	statusbar_draw();
 }
 
 gint

@@ -9,6 +9,13 @@ gint contactlist_width = 30;
 gint list_offset = 0, list_marked = 0;
 
 void
+contactlist_init()
+{
+	if (contactlist == NULL)
+		contactlist = g_ptr_array_new();
+}
+
+void
 contactlist_add_item(TpaConnection *connection, TpaContact * contact, const wchar_t * text, gint attr)
 {
 	FamaContactListItem *a = g_new(FamaContactListItem, 1);
@@ -25,6 +32,9 @@ contactlist_add_item(TpaConnection *connection, TpaContact * contact, const wcha
 FamaContactListItem *
 contactlist_get_selected()
 {
+	if (contactlist->len < 1)
+		return NULL;
+
 	return g_ptr_array_index(contactlist, list_marked);
 }
 
@@ -39,10 +49,8 @@ contactlist_draw()
 				  contactlist_width - 3,
 				  2, get_max_x() - contactlist_width + 2);
 		clistpanel = new_panel(clistwin);
-		contactlist = g_ptr_array_new();
 
-		g_assert(clistwin != NULL && clistpanel != NULL &&
-			 contactlist != NULL);
+		g_assert(clistwin != NULL && clistpanel != NULL);
 	}
 
 	/*
@@ -83,6 +91,8 @@ contactlist_draw()
 		mvwaddnwstr(clistwin, i, 0, item->text, str_len);
 		wattrset(clistwin, A_NORMAL);
 
+		wrefresh(clistwin);
+
 		if (i == (list_marked - list_offset))
 			item->attr &= ~A_REVERSE;
 	}
@@ -99,10 +109,10 @@ contactlist_scroll(gint m)
 
 	list_marked += m;
 
-	if (list_marked < 0)
-		list_marked = 0;
 	if (list_marked >= rows - 1)
 		list_marked = rows - 1;
+	if (list_marked < 0)
+		list_marked = 0;
 
 	while (list_marked >= (list_offset + get_max_y() - 4))
 		list_offset++;
