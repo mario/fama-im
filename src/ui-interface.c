@@ -70,8 +70,9 @@ draw_interface()
 	mvaddwstr(0, (max_x - 12) / 2, L"F A M A  I M");
 	attroff(A_REVERSE | c->borders);
 
-        attron(A_UNDERLINE | A_BOLD | c->window_title);
-	mvhline(1, max_x - contactlist_get_width() + 1, ' ', contactlist_get_width());
+	attron(A_UNDERLINE | A_BOLD | c->window_title);
+	mvhline(1, max_x - contactlist_get_width() + 1, ' ',
+		contactlist_get_width());
 	mvaddwstr(1, max_x - contactlist_get_width() + 2, L"Contacts");
 	attroff(A_UNDERLINE | A_BOLD | c->window_title);
 

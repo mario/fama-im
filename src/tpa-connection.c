@@ -2,7 +2,7 @@
 #include <string.h>
 
 static void
-status_changed_cb(TpaConnection *, TpaConnectionStatus, TpaConnectionStatusReason);
+  status_changed_cb(TpaConnection *, TpaConnectionStatus, TpaConnectionStatusReason);
 
 GPtrArray *connections = NULL;
 
@@ -10,6 +10,20 @@ GPtrArray *
 connection_get_connections()
 {
 	return connections;
+}
+
+void
+connection_disconnect_all()
+{
+	TpaConnection *a;
+	gint i;
+
+	for (i = 0; i < connections->len; i++) {
+		a = g_ptr_array_index(connections, i);
+
+		if (a != NULL)
+			tpa_connection_disconnect(a);
+	}
 }
 
 TpaConnection *
@@ -35,10 +49,12 @@ connection_connect(gchar * account, gchar * password)
 	tpa_parameters_set_value_as_string(parameters, "account", account);
 	tpa_parameters_set_value_as_string(parameters, "password", password);
 	tpa_parameters_set_value_as_string(parameters, "resource", "tapioca");
-	tpa_parameters_set_value_as_string(parameters, "server","talk.google.com");
+	tpa_parameters_set_value_as_string(parameters, "server",
+					   "talk.google.com");
 	tpa_parameters_set_value_as_uint(parameters, "port", 5223);
 	tpa_parameters_set_value_as_boolean(parameters, "old-ssl", TRUE);
-	tpa_parameters_set_value_as_boolean(parameters, "ignore-ssl-errors", TRUE);
+	tpa_parameters_set_value_as_boolean(parameters, "ignore-ssl-errors",
+					    TRUE);
 
 	/*
 	 * Get a Connection 
@@ -167,7 +183,7 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 	if (status == TPA_CONNECTION_STATUS_DISCONNECTED) {
 		g_message("Disconnected.");
 		connection_handle_reason(reason);
-		tpa_connection_disconnect (conn);
+		g_ptr_array_remove(connections, conn);
+		tpa_connection_disconnect(conn);
 	}
 }
-

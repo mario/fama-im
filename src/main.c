@@ -19,6 +19,7 @@ main(int argc, char **argv)
 	g_main_loop_unref(loop);
 
 	destroy_interface();
+	connection_disconnect_all();
 	manager_factory_destroy();
 
 	return 0;
@@ -96,7 +97,9 @@ init_all(gpointer data)
 
 		g_clear_error(&err);
 	} else if (!err && c) {
-		g_message("Redirecting stderr to %s, thus supressing error messages\n", c);
+		g_message
+			("Redirecting stderr to %s, thus supressing error messages\n",
+			 c);
 		g_freopen(c, "w", stderr);
 	}
 

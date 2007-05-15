@@ -21,12 +21,13 @@ statusbar_draw()
 
 	swprintf(wbuf, wbuf_len - 1, L"[%s] Act: [%s]", time_str, status_str);
 
-        attron(c->borders | A_REVERSE);
+	attron(c->borders | A_REVERSE);
 
-        attron(A_REVERSE);
-        mvhline(get_max_y() - 2, 0, BORDER, get_max_x());
-        mvwaddwstr_with_maxwidth(stdscr, get_max_y() - 2, 1, wbuf, get_max_x() - 2);
-        attroff(A_REVERSE | c->borders);
+	attron(A_REVERSE);
+	mvhline(get_max_y() - 2, 0, BORDER, get_max_x());
+	mvwaddwstr_with_maxwidth(stdscr, get_max_y() - 2, 1, wbuf,
+				 get_max_x() - 2);
+	attroff(A_REVERSE | c->borders);
 
 	update_panels();
 	doupdate();

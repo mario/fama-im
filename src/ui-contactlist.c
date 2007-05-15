@@ -16,7 +16,8 @@ contactlist_init()
 }
 
 void
-contactlist_add_item(TpaConnection *connection, TpaContact * contact, const wchar_t * text, gint attr)
+contactlist_add_item(TpaConnection * connection, TpaContact * contact,
+		     const wchar_t * text, gint attr)
 {
 	FamaContactListItem *a = g_new(FamaContactListItem, 1);
 

@@ -24,10 +24,14 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 				if ((a = contactlist_get_selected()) == NULL)
 					break;
 
-				tpa_connection_create_channel (a->connection, TPA_CHANNEL_TYPE_TEXT, TPA_CHANNEL_TARGET (a->contact));
+				tpa_connection_create_channel(a->connection,
+							      TPA_CHANNEL_TYPE_TEXT,
+							      TPA_CHANNEL_TARGET
+							      (a->contact));
 
 				g_message
-					("%p: Creating channel..", a->connection);
+					("%p: Creating channel..",
+					 a->connection);
 			} else if (cmdbuf[0] != L'/') {
 				FamaWindow *win;
 
@@ -41,8 +45,12 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 				if (win->channel != NULL) {
 					gchar *contents;
 
-					contents = utf8_from_wchar(cmdbuf, NULL, 0);
-					channel_send_message(TPA_TEXT_CHANNEL(win->channel), contents);
+					contents =
+						utf8_from_wchar(cmdbuf, NULL,
+								0);
+					channel_send_message(TPA_TEXT_CHANNEL
+							     (win->channel),
+							     contents);
 					g_free(contents);
 				}
 			} else {

@@ -91,6 +91,7 @@ signal_handler_setup()
 	g_assert(fcntl(signal_pipe[1], F_SETFL, fd_flags | O_NONBLOCK) != -1);
 
 	signal(SIGWINCH, pipe_signals);
+	signal(SIGINT, pipe_signals);
 
 	g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
 

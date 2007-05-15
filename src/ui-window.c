@@ -19,7 +19,7 @@ window_create_status_string()
 
 	list = g_new(gchar *, window_list->len + 1);
 
-	for (i=0, j=0; i<window_list->len; i++) {
+	for (i = 0, j = 0; i < window_list->len; i++) {
 		win = g_ptr_array_index(window_list, i);
 
 		if (win->is_updated)
@@ -28,7 +28,7 @@ window_create_status_string()
 
 	list[j] = NULL;
 
-	status_str = g_strjoinv (", ", list);
+	status_str = g_strjoinv(", ", list);
 	g_strfreev(list);
 
 	return status_str;
@@ -40,7 +40,7 @@ window_create_status_string()
  */
 
 FamaWindow *
-window_find_channel (TpaChannel *channel)
+window_find_channel(TpaChannel * channel)
 {
 	FamaWindow *win = NULL;
 	gint i;
@@ -69,7 +69,8 @@ window_draw_title_bar()
 	mvhline(1, 0, ' ', WINDOW_WIDTH);
 
 	if (current_window->title != NULL)
-		mvwaddwstr_with_maxwidth(stdscr, 1, 2, current_window->title, WINDOW_WIDTH - 2);
+		mvwaddwstr_with_maxwidth(stdscr, 1, 2, current_window->title,
+					 WINDOW_WIDTH - 2);
 
 	attrset(A_NORMAL);
 }

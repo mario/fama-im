@@ -37,10 +37,10 @@ typedef struct {
 } FamaMessage;
 
 typedef struct _FamaContactListItem {
-        TpaContact *contact;
-        TpaConnection *connection;
-        wchar_t *text;
-        gint attr;
+	TpaContact *contact;
+	TpaConnection *connection;
+	wchar_t *text;
+	gint attr;
 } FamaContactListItem;
 
 
@@ -123,11 +123,11 @@ GKeyFile *keyfile_get();
 
 /* Window.c */
 FamaWindow *window_new(FamaWindowType);
-void window_append_rows(FamaWindow *, GPtrArray *, gint);
-void window_add_message(FamaWindow *, wchar_t *, gint, wchar_t *);
 FamaWindow *window_get_current();
 FamaWindow *window_get_index(gint);
-FamaWindow *window_find_channel (TpaChannel *c);
+FamaWindow *window_find_channel(TpaChannel * c);
+void window_append_rows(FamaWindow *, GPtrArray *, gint);
+void window_add_message(FamaWindow *, wchar_t *, gint, wchar_t *);
 void window_set_current(FamaWindow *);
 void window_set_title(FamaWindow *, wchar_t *);
 void window_draw_title_bar();
@@ -149,22 +149,28 @@ gboolean command_execute(gint, gchar **);
 void color_init();
 ColorSettings *color_get();
 
+/* Connection.c */
+void connection_disconnect_all();
+TpaConnection *connection_connect(gchar *, gchar *);
+
+
 /* Factory-manager.c */
 TpaManagerFactory *manager_factory_get();
 void manager_factory_init();
+void manager_factory_destroy();
 
 /* Channel.c */
-void channel_send_message (TpaTextChannel *, gchar *);
+void channel_send_message(TpaTextChannel *, gchar *);
 void channel_created_cb(TpaConnection * conn, TpaChannel * channel);
 
 /* Clock.c */
-gboolean clock_cb (gpointer data);
+gboolean clock_cb(gpointer data);
 const gchar *clock_get_time();
 
 /* Statusbar */
 void statusbar_draw();
 
 /* Util.c */
-int mvwaddwstr_with_maxwidth(WINDOW *win, int y, int x, const wchar_t *wstr, int max);
+int mvwaddwstr_with_maxwidth(WINDOW *, int, int, const wchar_t *, int);
 
 #endif

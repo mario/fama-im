@@ -14,18 +14,18 @@ clock_get_time()
 
 
 gboolean
-clock_cb (gpointer data)
+clock_cb(gpointer data)
 {
-        struct tm *ptr;
-        time_t tm;
+	struct tm *ptr;
+	time_t tm;
 
-        tm = time(NULL);
-        ptr = localtime(&tm);
-        strftime(timebuffer, sizeof (timebuffer) - 1, "%H:%M", ptr);
+	tm = time(NULL);
+	ptr = localtime(&tm);
+	strftime(timebuffer, sizeof(timebuffer) - 1, "%H:%M", ptr);
 
 	statusbar_draw();
 
-	g_timeout_add ((60 - ((guint)tm % 60)) * 1000, clock_cb, NULL);
+	g_timeout_add((60 - ((guint) tm % 60)) * 1000, clock_cb, NULL);
 
 	return FALSE;
 }
