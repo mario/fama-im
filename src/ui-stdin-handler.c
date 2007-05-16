@@ -29,9 +29,6 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 							      TPA_CHANNEL_TARGET
 							      (a->contact));
 
-				g_message
-					("%p: Creating channel..",
-					 a->connection);
 			} else if (cmdbuf[0] != L'/') {
 				FamaWindow *win;
 

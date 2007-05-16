@@ -30,6 +30,11 @@ typedef struct {
 	TpaChannel *channel;
 } FamaWindow;
 
+typedef enum {
+	FocusContactList,
+	FocusCommandLine,
+} FamaFocus;
+
 typedef struct {
 	gint attr;
 	wchar_t *title;

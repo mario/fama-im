@@ -225,7 +225,11 @@ window_destroy(FamaWindow * w)
 	del_panel(w->ncpanel);
 	delwin(w->ncwin);
 
+	tpa_channel_close(w->channel);
 	g_ptr_array_remove(window_list, w);
+	g_free(w->title);
+	g_free(w);
+
 	window_set_current(g_ptr_array_index(window_list, 0));
 }
 

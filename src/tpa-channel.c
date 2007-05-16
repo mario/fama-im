@@ -68,15 +68,11 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 	target = tpa_channel_target_get_uri(tpa_channel_get_target(channel));
 
 	if (tpa_channel_get_channel_type(channel) == TPA_CHANNEL_TYPE_TEXT) {
-		int i;
-		GPtrArray *messages;
-		TpaTextMessage *msg;
 		TpaTextChannel *text_channel;
 		FamaWindow *win;
 		wchar_t *target_w;
 
 		text_channel = TPA_TEXT_CHANNEL(channel);
-		messages = tpa_text_channel_get_pending(text_channel, TRUE);
 
 		win = window_new(WindowTypeConversation);
 		win->channel = channel;
@@ -87,13 +83,6 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 		window_set_title(win, target_w);
 		g_free(target_w);
 		window_draw_title_bar();
-
-
-		for (i = 0; i < messages->len; i++) {
-			msg = g_ptr_array_index(messages, i);
-			message_add_text_message(text_channel, msg,
-						 MESSAGE_RECEIVED);
-		}
 
 		g_signal_connect(G_OBJECT(text_channel), "message-sent",
 				 G_CALLBACK(message_sent_cb), NULL);

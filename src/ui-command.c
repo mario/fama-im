@@ -80,6 +80,18 @@ command_func_window(gint argc, gchar ** argv)
 		return FALSE;
 	}
 
+	if (g_ascii_strcasecmp(argv[1], "close") == 0) {
+		g_assert((w = window_get_current()) != NULL);
+
+		if (w->type == WindowTypeMain) {
+			g_warning("cannot close the main window!");
+			return FALSE;
+		}
+
+		window_destroy(w);
+		return TRUE;
+	}
+
 	w = window_get_index(atoi(argv[1]));
 
 	if (w == NULL) {

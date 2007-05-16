@@ -1,6 +1,11 @@
 #include "common.h"
 #include <string.h>
 
+/* The base of how the contact-list is sorted
+ * See TpaContactPresence.
+ */
+const gint statusrank[8] = { 6, 1, 2, 3, 4, 5 };
+
 GPtrArray *contactlist = NULL;
 WINDOW *clistwin = NULL;
 PANEL *clistpanel = NULL;
@@ -37,6 +42,32 @@ contactlist_get_selected()
 		return NULL;
 
 	return g_ptr_array_index(contactlist, list_marked);
+}
+
+gint
+sort_compare_func(gconstpointer a, gconstpointer b)
+{
+	TpaContactPresence a_pres, b_pres;
+
+	a_pres = tpa_contact_base_get_presence(TPA_CONTACT_BASE
+					       ((*(FamaContactListItem **) a)->
+						contact));
+	b_pres = tpa_contact_base_get_presence(TPA_CONTACT_BASE
+					       ((*(FamaContactListItem **) b)->
+						contact));
+
+	g_assert(a_pres > 0 && b_pres > 0);
+
+	if (statusrank[a_pres - 1] < statusrank[b_pres - 1])
+		return -1;
+
+	return 1;
+}
+
+void
+contactlist_sort()
+{
+	g_ptr_array_sort(contactlist, sort_compare_func);
 }
 
 void
@@ -191,5 +222,6 @@ contactlist_presence_updated_cb(TpaContact * contact,
 		}
 	}
 
+	contactlist_sort();
 	contactlist_draw();
 }

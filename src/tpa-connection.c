@@ -174,6 +174,7 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 					     contactlist_presence_to_attr
 					     (contact_presence));
 		}
+		contactlist_sort();
 		contactlist_draw();
 
 		channels = tpa_connection_get_open_channels(conn);

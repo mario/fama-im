@@ -54,6 +54,7 @@ deliver_signal(GIOChannel * source, GIOCondition cond, gpointer d)
 			redraw_interface();
 			break;
 		case SIGINT:
+		case SIGABRT:
 			stop_main_loop();
 			break;
 		default:
@@ -92,6 +93,7 @@ signal_handler_setup()
 
 	signal(SIGWINCH, pipe_signals);
 	signal(SIGINT, pipe_signals);
+	signal(SIGABRT, pipe_signals);
 
 	g_signal_in = g_io_channel_unix_new(signal_pipe[0]);
 
