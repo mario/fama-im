@@ -18,6 +18,9 @@ connection_disconnect_all()
 	TpaConnection *a;
 	gint i;
 
+	if (connections == NULL)
+		return;
+
 	for (i = 0; i < connections->len; i++) {
 		a = g_ptr_array_index(connections, i);
 
@@ -35,7 +38,7 @@ connection_connect(gchar * account, gchar * password)
 
 	manager =
 		tpa_manager_factory_get_manager(manager_factory_get(),
-						"jabber");
+						"msn");
 	if (!manager) {
 		g_warning("failed to create Connection Manager!");
 		return FALSE;
@@ -44,22 +47,22 @@ connection_connect(gchar * account, gchar * password)
 	/*
 	 * setup the parameters for connection 
 	 */
-	parameters = tpa_manager_get_protocol_parameters(manager, "jabber");
+	parameters = tpa_manager_get_protocol_parameters(manager, "msn");
 
 	tpa_parameters_set_value_as_string(parameters, "account", account);
 	tpa_parameters_set_value_as_string(parameters, "password", password);
 	tpa_parameters_set_value_as_string(parameters, "resource", "tapioca");
-	tpa_parameters_set_value_as_string(parameters, "server",
-					   "talk.google.com");
-	tpa_parameters_set_value_as_uint(parameters, "port", 5223);
-	tpa_parameters_set_value_as_boolean(parameters, "old-ssl", TRUE);
-	tpa_parameters_set_value_as_boolean(parameters, "ignore-ssl-errors",
-					    TRUE);
+	tpa_parameters_set_value_as_string(parameters, "server", "messenger.hotmail.com");
+//	tpa_parameters_set_value_as_string(parameters, "server", "talk.google.com");
+	tpa_parameters_set_value_as_uint(parameters, "port", 1863);
+//	tpa_parameters_set_value_as_uint(parameters, "port", 5223);
+//	tpa_parameters_set_value_as_boolean(parameters, "old-ssl", TRUE);
+//	tpa_parameters_set_value_as_boolean(parameters, "ignore-ssl-errors", TRUE);
 
 	/*
 	 * Get a Connection 
 	 */
-	conn = tpa_manager_request_connection(manager, "jabber", parameters);
+	conn = tpa_manager_request_connection(manager, "msn", parameters);
 
 	if (!conn) {
 		g_warning("failed to create Connection!\n");
@@ -147,10 +150,10 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 		/*
 		 * Get contact-list 
 		 */
+		sleep(7);
+
 		list = tpa_connection_get_contactlist(conn);
 		contacts = tpa_contact_list_get_known(list);
-
-		g_message("%p, %p %d", list, contacts, contacts->len);
 
 		for (i = 0; i < contacts->len; i++) {
 			contact = g_ptr_array_index(contacts, i);

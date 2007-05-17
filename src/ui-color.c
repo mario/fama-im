@@ -28,26 +28,35 @@ color_str_to_int(gchar * str)
 	return -1;
 }
 
-void
-color_init()
+gint
+color_with_fallback(gchar *item, gint default_color)
 {
-	gchar *tmp;
 	GError *err = NULL;
-	gint background;
+	gchar *tmp;
+	gint ret = 0;
 
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "background",
-				    &err);
+	tmp = g_key_file_get_string(keyfile_get(), "colors", item, &err);
 	if (tmp == NULL) {
 		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
 			g_error("invalid value: %s", err->message);
 		g_clear_error(&err);
-		background = -1;
+		ret = default_color;
 	} else {
-		if ((background = color_str_to_int(tmp)) == 8)
-			background = -1;
-
+		ret = COLOR_PAIR(color_str_to_int(tmp));
 		g_free(tmp);
 	}
+
+	return ret;
+}
+
+void
+color_init()
+{
+	gint background;
+
+	background = color_with_fallback("background", -1);
+	if (background == 8)
+		background = -1;
 
 	start_color();
 	use_default_colors();
@@ -62,137 +71,17 @@ color_init()
 	init_pair(7, COLOR_WHITE, background);
 	init_pair(8, -1, background);
 
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "borders", &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.borders = COLOR_PAIR(6);
-	} else {
-		settings.borders = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "command_line",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.command_line = 0;
-	} else {
-		settings.command_line = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "window_title",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.window_title = COLOR_PAIR(3);
-	} else {
-		settings.window_title = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "message_heading",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.message_heading = COLOR_PAIR(2);
-	} else {
-		settings.message_heading = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "message_text",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.message_text = 0;
-	} else {
-		settings.message_text = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "status_available",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.status_available = COLOR_PAIR(2);
-	} else {
-		settings.status_available = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "status_away",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.status_away = COLOR_PAIR(6);
-	} else {
-		settings.status_away = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "status_idle",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.status_idle = COLOR_PAIR(3);
-	} else {
-		settings.status_idle = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "status_busy",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.status_busy = COLOR_PAIR(5);
-	} else {
-		settings.status_busy = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "status_offline",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.status_offline = 0;
-	} else {
-		settings.status_offline = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
-	tmp = g_key_file_get_string(keyfile_get(), "colors", "status_other",
-				    &err);
-	if (tmp == NULL) {
-		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
-			g_error("invalid value: %s", err->message);
-		g_clear_error(&err);
-		settings.status_other = COLOR_PAIR(1);
-	} else {
-		settings.status_other = COLOR_PAIR(color_str_to_int(tmp));
-		g_free(tmp);
-	}
-
+	settings.borders = color_with_fallback("borders", COLOR_PAIR(6));
+	settings.command_line = color_with_fallback("command_line", 0);
+	settings.window_title = color_with_fallback("window_title", COLOR_PAIR(3));
+	settings.message_heading = color_with_fallback("message_heading", COLOR_PAIR(2));
+	settings.message_text = color_with_fallback("message_text", 0);
+	settings.status_available = color_with_fallback("status_available", COLOR_PAIR(2));
+	settings.status_away = color_with_fallback("status_away", COLOR_PAIR(6));
+	settings.status_idle = color_with_fallback("status_idle", COLOR_PAIR(3));
+	settings.status_busy = color_with_fallback("status_busy", COLOR_PAIR(5));
+	settings.status_offline = color_with_fallback("status_offline", 0);
+	settings.status_other = color_with_fallback("status_available", COLOR_PAIR(1));
 }
 
 ColorSettings *
