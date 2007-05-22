@@ -1,8 +1,10 @@
-#include <string.h>
-#include <glib.h>
 #include "common.h"
+#include <string.h>
+#include <glib/gstdio.h>
 
-#define CONFIG_FILE_NAME ".famaconfig"
+#define CONFIG_DIR	".fama"
+#define CONFIG_ACCOUNTS	"accounts"
+#define CONFIG_FILE	"config"
 
 const gchar *default_keyfile = "[core]\n"
 	"contact_list_width=30\n"
@@ -17,6 +19,8 @@ const gchar *default_keyfile = "[core]\n"
 	"borders=green\n"
 	"command_line=default\n"
 	"window_title=cyan\n"
+	"dialog_text=white\n"
+	"dialog_background=blue\n"
 	"message_heading=green\n"
 	"message_text=default\n"
 	"status_available=green\n"
@@ -40,7 +44,8 @@ keyfile_read()
 	GError *err = NULL;
 	gint flags = G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS;
 
-	path = g_strdup_printf("%s/%s", g_get_home_dir(), CONFIG_FILE_NAME);
+	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), CONFIG_DIR,
+			       CONFIG_FILE);
 	g_assert(path != NULL);
 
 	keyFile = g_key_file_new();
@@ -76,13 +81,27 @@ keyfile_write()
 	gchar *data, *path;
 	gsize length;
 
+	if (!g_file_test(CONFIG_DIR, G_FILE_TEST_IS_DIR)) {
+		gchar *directory =
+			g_strdup_printf("%s/%s", g_get_home_dir(), CONFIG_DIR);
+
+		if (g_mkdir(directory, 0700) == -1) {
+			g_warning("Cannot create configuration directory '%s'",
+				  directory);
+			g_free(directory);
+			return FALSE;
+		}
+		g_free(directory);
+	}
+
 	data = g_key_file_to_data(keyFile, &length, &err);
 	if (data == NULL) {
 		g_warning("Cannot get keyfile data: %s", err->message);
 		return FALSE;
 	}
 
-	path = g_strdup_printf("%s/%s", g_get_home_dir(), CONFIG_FILE_NAME);
+	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), CONFIG_DIR,
+			       CONFIG_FILE);
 	if (g_file_set_contents(path, data, length, &err) == FALSE) {
 		g_warning("Cannot write to %s: %s", path, err->message);
 		g_free(data);

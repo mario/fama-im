@@ -99,7 +99,8 @@ contactlist_draw()
 		 * If we are at the selected item then
 		 * * add reversed colors
 		 */
-		if (i == (list_marked - list_offset))
+		if (i == (list_marked - list_offset) &&
+		    focus_get() == FocusContactList)
 			item->attr |= A_REVERSE;
 
 		wattron(clistwin, item->attr);
@@ -123,12 +124,10 @@ contactlist_draw()
 		mvwaddnwstr(clistwin, i, 0, item->text, str_len);
 		wattrset(clistwin, A_NORMAL);
 
-		wrefresh(clistwin);
-
-		if (i == (list_marked - list_offset))
+		if (i == (list_marked - list_offset) &&
+		    focus_get() == FocusContactList)
 			item->attr &= ~A_REVERSE;
 	}
-
 
 	update_panels();
 	doupdate();
@@ -219,9 +218,24 @@ contactlist_presence_updated_cb(TpaContact * contact,
 	for (i = 0; i < contactlist->len; i++) {
 		if ((a = g_ptr_array_index(contactlist, i))->contact == contact) {
 			a->attr = contactlist_presence_to_attr(presence);
+			break;
 		}
 	}
 
 	contactlist_sort();
 	contactlist_draw();
+}
+
+void
+contactlist_authorization_requested_cb(TpaContactList * list,
+				       TpaContact * contact)
+{
+	g_message("%p has requested you authorization", contact);
+}
+
+void
+contactlist_subscription_accepted_cb(TpaContactList * list,
+				     TpaContact * contact)
+{
+	g_message("%p has accepted your subscription", contact);
 }

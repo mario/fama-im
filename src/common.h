@@ -52,6 +52,8 @@ typedef struct _FamaContactListItem {
 typedef struct {
 	gint borders;
 	gint command_line;
+	gint dialog_text;
+	gint dialog_background;
 	gint window_title;
 	gint message_heading;
 	gint message_text;
@@ -64,6 +66,7 @@ typedef struct {
 } ColorSettings;
 
 typedef gboolean(*CommandFunc) (gint argc, gchar ** argv);
+typedef gboolean(*KeyCommandFunc) (gint id);
 
 /* Main.c */
 gboolean init_all(gpointer data);
@@ -90,6 +93,8 @@ void contactlist_destroy();
 void contactlist_add_item(TpaConnection *, TpaContact *, const wchar_t *, int);
 void contactlist_scroll(gint);
 void contactlist_presence_updated_cb(TpaContact *, TpaContactPresence, gchar *);
+void contactlist_authorization_requested_cb(TpaContactList *, TpaContact *);
+void contactlist_subscription_accepted_cb(TpaContactList *, TpaContact *);
 guint contactlist_presence_to_attr(TpaContactPresence);
 FamaContactListItem *contactlist_get_selected();
 
@@ -149,6 +154,11 @@ void log_get_time(gchar *, gsize);
 void command_init();
 void command_add(gchar *, CommandFunc);
 gboolean command_execute(gint, gchar **);
+
+/* Key-command.c */
+void key_command_init();
+void key_command_add(gint id, KeyCommandFunc);
+gboolean key_command_execute(gint id);
 
 /* Color.c */
 void color_init();

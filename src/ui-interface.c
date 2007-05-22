@@ -96,6 +96,11 @@ draw_interface()
 	 * Draw status-bar
 	 */
 	statusbar_draw();
+
+	/*
+	 * Set initial focus on command-line
+	 */
+	focus_set(FocusCommandLine);
 }
 
 gint

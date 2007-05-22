@@ -88,14 +88,15 @@ window_set_title(FamaWindow * w, wchar_t * title)
 void
 window_set_current(FamaWindow * w)
 {
-	g_assert(w != NULL);
-
 	current_window = w;
-	w->is_updated = FALSE;
 
-	top_panel(w->ncpanel);
-	window_draw_title_bar();
-	statusbar_draw();
+	if (w != NULL) {
+		w->is_updated = FALSE;
+
+		top_panel(w->ncpanel);
+		window_draw_title_bar();
+		statusbar_draw();
+	}
 
 	update_panels();
 	doupdate();

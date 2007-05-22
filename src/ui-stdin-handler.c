@@ -1,122 +1,147 @@
 #include "common.h"
 
+void
+handle_input_on_command_line(gunichar c)
+{
+	GError *err = NULL;
+
+
+	if (c == 0x0a || c == KEY_ENTER) {
+		wchar_t *cmdbuf = commandline_get_buffer();
+
+		if (cmdbuf[0] != L'/') {
+			FamaWindow *win;
+
+			/*
+			 * Send message to the conversation at the current
+			 * window.
+			 */
+
+			win = window_get_current();
+
+			if (win->channel != NULL) {
+				gchar *contents;
+
+				contents = utf8_from_wchar(cmdbuf, NULL, 0);
+				channel_send_message(TPA_TEXT_CHANNEL
+						     (win->channel), contents);
+				g_free(contents);
+			}
+		} else {
+			gchar *mbscmd, **argv;
+			gint argc;
+
+			/*
+			 * Convert wchar_t to gchar and then into an argument list
+			 */
+			mbscmd = utf8_from_wchar(cmdbuf, NULL, 0);
+			if (g_shell_parse_argv(&mbscmd[1], &argc, &argv, &err)
+			    == FALSE) {
+				g_warning("Could not parse command: %s",
+					  err->message);
+				g_clear_error(&err);
+			} else {
+				/*
+				 * Execute command!!
+				 */
+				if (command_execute(argc, argv) == FALSE)
+					g_warning
+						("Command '%s' not found!",
+						 argv[0]);
+
+				g_strfreev(argv);
+			}
+			g_free(mbscmd);
+		}
+
+
+		/*
+		 * Re-initialize the command-line 
+		 */
+		commandline_init();
+		commandline_draw();
+	} else if (c == KEY_BACKSPACE) {
+		commandline_delete();
+	} else if (c == KEY_LEFT) {
+		commandline_move_cursor(-1);
+	} else if (c == KEY_RIGHT) {
+		commandline_move_cursor(1);
+	} else if (c == '\t') {
+		/*
+		 * Ignore for the time being 
+		 */
+	} else {
+		gchar mbseq[32];
+		wchar_t wchar[3];
+		gsize size;
+
+		size = g_unichar_to_utf8(c, mbseq);
+		mbseq[size] = '\0';
+
+		utf8_to_wchar(mbseq, wchar, 2);
+
+		/*
+		 * Add character to command-line buffer 
+		 */
+		commandline_add_wch(wchar[0]);
+	}
+}
+
+void
+handle_input_on_contact_list(gunichar c)
+{
+	if (c == 0x0a || c == KEY_ENTER) {
+
+		FamaContactListItem *a;
+
+		/*
+		 * Start conversation with selected contact
+		 */
+		if ((a = contactlist_get_selected()) != NULL)
+			return;
+
+		tpa_connection_create_channel(a->connection,
+					      TPA_CHANNEL_TYPE_TEXT,
+					      TPA_CHANNEL_TARGET(a->contact));
+
+	} else if (c == KEY_UP) {
+		contactlist_scroll(-1);
+	} else if (c == KEY_DOWN) {
+		contactlist_scroll(1);
+	}
+}
+
 gboolean
 stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 {
-	GError *err = NULL;
 	gunichar unichar;
-	wchar_t *cmdbuf;
+	FamaFocus f;
 
 	while (get_wch(&unichar) != ERR) {
+		f = focus_get();
 
-		if (unichar == 0x0a || unichar == KEY_ENTER) {
-			/*
-			 * Do stuff with the buffer 
-			 */
-			cmdbuf = commandline_get_buffer();
-
-			if (cmdbuf[0] == L'\0') {
-				FamaContactListItem *a;
-
-				/*
-				 * Start conversation with selected contact
-				 */
-				if ((a = contactlist_get_selected()) == NULL)
-					break;
-
-				tpa_connection_create_channel(a->connection,
-							      TPA_CHANNEL_TYPE_TEXT,
-							      TPA_CHANNEL_TARGET
-							      (a->contact));
-
-			} else if (cmdbuf[0] != L'/') {
-				FamaWindow *win;
-
-				/*
-				 * Send message to the conversation at the current
-				 * window.
-				 */
-
-				win = window_get_current();
-
-				if (win->channel != NULL) {
-					gchar *contents;
-
-					contents =
-						utf8_from_wchar(cmdbuf, NULL,
-								0);
-					channel_send_message(TPA_TEXT_CHANNEL
-							     (win->channel),
-							     contents);
-					g_free(contents);
-				}
-			} else {
-				gchar *mbscmd, **argv;
-				gint argc;
-
-				/*
-				 * Convert wchar_t to gchar and then into an argument list
-				 */
-				mbscmd = utf8_from_wchar(cmdbuf, NULL, 0);
-				if (g_shell_parse_argv
-				    (&mbscmd[1], &argc, &argv, &err)
-				    == FALSE) {
-					g_warning("Could not parse command: %s",
-						  err->message);
-					g_clear_error(&err);
-				} else {
-					/*
-					 * Execute command!!
-					 */
-					if (command_execute(argc, argv) ==
-					    FALSE)
-						g_warning
-							("Command '%s' not found!",
-							 argv[0]);
-
-					g_strfreev(argv);
-				}
-				g_free(mbscmd);
-			}
-
-
-			/*
-			 * Re-initialize the command-line 
-			 */
-			commandline_init();
-			commandline_draw();
-		} else if (unichar == KEY_BACKSPACE) {
-			commandline_delete();
-		} else if (unichar == KEY_LEFT) {
-			commandline_move_cursor(-1);
-		} else if (unichar == KEY_RIGHT) {
-			commandline_move_cursor(1);
-		} else if (unichar == KEY_UP) {
-			contactlist_scroll(-1);
-		} else if (unichar == KEY_DOWN) {
-			contactlist_scroll(1);
-		} else if (unichar == '\t') {
-			/*
-			 * Ignore for the time being 
-			 */
-		} else {
-			gchar mbseq[32];
-			wchar_t wchar[3];
-			gsize size;
-
-			size = g_unichar_to_utf8(unichar, mbseq);
-			mbseq[size] = '\0';
-
-			utf8_to_wchar(mbseq, wchar, 2);
-
-			/*
-			 * Add character to command-line buffer 
-			 */
-			commandline_add_wch(wchar[0]);
+		if (unichar == KEY_F(1)) {
+			focus_set(FocusCommandLine);
+			continue;
+		} else if (unichar == KEY_F(2)) {
+			focus_set(FocusContactList);
+			continue;
+		} else if (unichar == KEY_F(3)) {
+			dialog_yes_no();
+			continue;
 		}
 
+		switch (f) {
+		case FocusCommandLine:
+			handle_input_on_command_line(unichar);
+			break;
+		case FocusContactList:
+			handle_input_on_contact_list(unichar);
+			break;
+		}
 	}
-	return (TRUE);
+
+	return TRUE;
 }
 
 

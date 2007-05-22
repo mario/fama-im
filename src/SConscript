@@ -20,6 +20,7 @@ source_files = Split("""main.c
 			ui-clock.c
 			ui-util.c
 			ui-focus.c
+			ui-dialog.c
 
 			ui-command-list.c
 			ui-command-connect.c

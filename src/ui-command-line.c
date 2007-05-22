@@ -36,7 +36,7 @@ commandline_draw()
 	/*
 	 * clear 
 	 */
-	mvhline(get_max_y() - 1, 0, ' ', get_max_x());
+	mvhline(get_max_y() - 1, 1, ' ', get_max_x() - 1);
 
 	while (ptr < offset)
 		offset -= (max_width / 2);

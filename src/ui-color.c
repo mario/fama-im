@@ -29,7 +29,7 @@ color_str_to_int(gchar * str)
 }
 
 gint
-color_with_fallback(gchar *item, gint default_color)
+color_with_fallback(gchar * item, gint default_color)
 {
 	GError *err = NULL;
 	gchar *tmp;
@@ -73,15 +73,26 @@ color_init()
 
 	settings.borders = color_with_fallback("borders", COLOR_PAIR(6));
 	settings.command_line = color_with_fallback("command_line", 0);
-	settings.window_title = color_with_fallback("window_title", COLOR_PAIR(3));
-	settings.message_heading = color_with_fallback("message_heading", COLOR_PAIR(2));
+	settings.dialog_text =
+		color_with_fallback("dialog_text", COLOR_PAIR(7));
+	settings.dialog_background =
+		color_with_fallback("dialog_background", COLOR_PAIR(4));
+	settings.window_title =
+		color_with_fallback("window_title", COLOR_PAIR(3));
+	settings.message_heading =
+		color_with_fallback("message_heading", COLOR_PAIR(2));
 	settings.message_text = color_with_fallback("message_text", 0);
-	settings.status_available = color_with_fallback("status_available", COLOR_PAIR(2));
-	settings.status_away = color_with_fallback("status_away", COLOR_PAIR(6));
-	settings.status_idle = color_with_fallback("status_idle", COLOR_PAIR(3));
-	settings.status_busy = color_with_fallback("status_busy", COLOR_PAIR(5));
+	settings.status_available =
+		color_with_fallback("status_available", COLOR_PAIR(2));
+	settings.status_away =
+		color_with_fallback("status_away", COLOR_PAIR(6));
+	settings.status_idle =
+		color_with_fallback("status_idle", COLOR_PAIR(3));
+	settings.status_busy =
+		color_with_fallback("status_busy", COLOR_PAIR(5));
 	settings.status_offline = color_with_fallback("status_offline", 0);
-	settings.status_other = color_with_fallback("status_available", COLOR_PAIR(1));
+	settings.status_other =
+		color_with_fallback("status_available", COLOR_PAIR(1));
 }
 
 ColorSettings *
