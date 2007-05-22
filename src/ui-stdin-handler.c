@@ -127,7 +127,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			focus_set(FocusContactList);
 			continue;
 		} else if (unichar == KEY_F(3)) {
-			dialog_yes_no();
+			account_add("jabber", "jonas.broms@jabber.se");
 			continue;
 		}
 

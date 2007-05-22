@@ -2,10 +2,6 @@
 #include <string.h>
 #include <glib/gstdio.h>
 
-#define CONFIG_DIR	".fama"
-#define CONFIG_ACCOUNTS	"accounts"
-#define CONFIG_FILE	"config"
-
 const gchar *default_keyfile = "[core]\n"
 	"contact_list_width=30\n"
 	"\n# If commented, Fama uses the charset of the current locale\n"
@@ -44,8 +40,8 @@ keyfile_read()
 	GError *err = NULL;
 	gint flags = G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS;
 
-	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), CONFIG_DIR,
-			       CONFIG_FILE);
+	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), FAMA_CONFIG_DIR,
+			       FAMA_CONFIG_FILE);
 	g_assert(path != NULL);
 
 	keyFile = g_key_file_new();
@@ -81,9 +77,10 @@ keyfile_write()
 	gchar *data, *path;
 	gsize length;
 
-	if (!g_file_test(CONFIG_DIR, G_FILE_TEST_IS_DIR)) {
+	if (!g_file_test(FAMA_CONFIG_DIR, G_FILE_TEST_IS_DIR)) {
 		gchar *directory =
-			g_strdup_printf("%s/%s", g_get_home_dir(), CONFIG_DIR);
+			g_strdup_printf("%s/%s", g_get_home_dir(),
+					FAMA_CONFIG_DIR);
 
 		if (g_mkdir(directory, 0700) == -1) {
 			g_warning("Cannot create configuration directory '%s'",
@@ -100,8 +97,8 @@ keyfile_write()
 		return FALSE;
 	}
 
-	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), CONFIG_DIR,
-			       CONFIG_FILE);
+	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), FAMA_CONFIG_DIR,
+			       FAMA_CONFIG_FILE);
 	if (g_file_set_contents(path, data, length, &err) == FALSE) {
 		g_warning("Cannot write to %s: %s", path, err->message);
 		g_free(data);

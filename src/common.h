@@ -131,6 +131,10 @@ gint keyfile_read();
 gint keyfile_write();
 GKeyFile *keyfile_get();
 
+#define FAMA_CONFIG_DIR                 ".fama"
+#define FAMA_CONFIG_ACCOUNTS_DIR        "accounts"
+#define FAMA_CONFIG_FILE                "config"
+
 /* Window.c */
 FamaWindow *window_new(FamaWindowType);
 FamaWindow *window_get_current();
