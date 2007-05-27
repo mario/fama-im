@@ -20,7 +20,9 @@ main(int argc, char **argv)
 
 	destroy_interface();
 	connection_disconnect_all();
+	account_destroy();
 	manager_factory_destroy();
+	tpa_thread_shutdown(FALSE);
 
 	return 0;
 }
@@ -107,6 +109,11 @@ init_all(gpointer data)
 	 * Initialize manager factory
 	 */
 	manager_factory_init();
+
+	/*
+	 * Load account file
+	 */
+	account_init();
 
 	/*
 	 * Initialize the interface

@@ -23,6 +23,7 @@ source_files = Split("""main.c
 
 			ui-command-list.c
 			ui-command-connect.c
+			ui-command-account.c
 
 			tpa-connection.c
 			tpa-account.c

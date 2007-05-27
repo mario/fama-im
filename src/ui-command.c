@@ -10,6 +10,7 @@ gboolean command_func_list(gint argc, gchar ** argv);
 gboolean command_func_help(gint argc, gchar ** argv);
 gboolean command_func_connect(gint argc, gchar ** argv);
 gboolean command_func_quit(gint argc, gchar ** argv);
+gboolean command_func_account(gint argc, gchar ** argv);
 
 /*
  * This function is for command_func_help()'s private use
@@ -125,6 +126,7 @@ command_init()
 	command_add("window", command_func_window);
 	command_add("connect", command_func_connect);
 	command_add("list", command_func_list);
+	command_add("account", command_func_account);
 }
 
 /*

@@ -33,7 +33,7 @@ keyfile_get()
 	return keyFile;
 }
 
-gint
+gboolean
 keyfile_read()
 {
 	gchar *path;
@@ -70,26 +70,20 @@ keyfile_read()
 	return TRUE;
 }
 
-gint
+gboolean
 keyfile_write()
 {
 	GError *err = NULL;
 	gchar *data, *path;
 	gsize length;
 
-	if (!g_file_test(FAMA_CONFIG_DIR, G_FILE_TEST_IS_DIR)) {
-		gchar *directory =
-			g_strdup_printf("%s/%s", g_get_home_dir(),
-					FAMA_CONFIG_DIR);
-
-		if (g_mkdir(directory, 0700) == -1) {
-			g_warning("Cannot create configuration directory '%s'",
-				  directory);
-			g_free(directory);
-			return FALSE;
-		}
-		g_free(directory);
+	path = g_strdup_printf("%s/%s", g_get_home_dir(), FAMA_CONFIG_DIR);
+	if (g_mkdir_with_parents(path, 0700) != 0) {
+		g_warning("Cannot create directories for '%s'", path);
+		return FALSE;
 	}
+	g_free(path);
+
 
 	data = g_key_file_to_data(keyFile, &length, &err);
 	if (data == NULL) {

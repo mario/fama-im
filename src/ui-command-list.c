@@ -18,7 +18,7 @@ _concat_ptr_array_items(gpointer data, gpointer user_data)
 
 
 /*
- * List supported protocols and accounts
+ * List supported profiles and accounts
  */
 gboolean
 command_func_list(gint argc, gchar ** argv)
@@ -28,19 +28,19 @@ command_func_list(gint argc, gchar ** argv)
 	gchar *mbseq = NULL;
 
 	if (argc < 2) {
-		g_warning("list: usage: list [protocols|accounts]");
+		g_warning("list: usage: list [profiles|accounts]");
 		return FALSE;
 	}
 
-	if (g_ascii_strncasecmp("protocols", argv[1], -1) == 0) {
+	if (g_ascii_strncasecmp("profiles", argv[1], -1) == 0) {
 		wcscpy(title, L"List of available protocols");
-		items = tpa_manager_factory_get_all_protocols
+		items = tpa_manager_factory_get_all_profiles
 			(manager_factory_get());
 	} else if (g_ascii_strncasecmp("accounts", argv[1], -1) == 0) {
 		g_warning("list: listing of accounts is not implemented");
 		return FALSE;
 	} else {
-		g_warning("list: usage: list [protocols|accounts]");
+		g_warning("list: usage: list [profiles|accounts]");
 		return FALSE;
 	}
 

@@ -18,7 +18,7 @@ log_function(const gchar * log_domain, GLogLevelFlags log_level,
 	/*
 	 * Log to stdout 
 	 */
-	if ((w = window_get_index(0)) == NULL) {
+	if ((w = window_get_main()) == NULL) {
 		if (log_level == G_LOG_LEVEL_WARNING ||
 		    log_level == G_LOG_LEVEL_CRITICAL)
 			printf("** %s Warning: %s\n", time, message);

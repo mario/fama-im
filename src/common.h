@@ -89,6 +89,7 @@ void contactlist_init();
 void contactlist_set_width(gint);
 gint contactlist_get_width();
 void contactlist_draw();
+void contactlist_sort();
 void contactlist_destroy();
 void contactlist_add_item(TpaConnection *, TpaContact *, const wchar_t *, int);
 void contactlist_scroll(gint);
@@ -127,13 +128,13 @@ void commandline_move_cursor(gint);
 void commandline_delete();
 
 /* Keyfile.c */
-gint keyfile_read();
-gint keyfile_write();
+gboolean keyfile_read();
+gboolean keyfile_write();
 GKeyFile *keyfile_get();
 
 #define FAMA_CONFIG_DIR                 ".fama"
-#define FAMA_CONFIG_ACCOUNTS_DIR        "accounts"
 #define FAMA_CONFIG_FILE                "config"
+#define FAMA_ACCOUNTS			"accounts"
 
 /* Window.c */
 FamaWindow *window_new(FamaWindowType);
@@ -149,6 +150,7 @@ void window_destroy(FamaWindow *);
 void window_resize_all();
 gchar *window_create_status_string();
 
+#define window_get_main() window_get_index(0)
 
 /* Log.c */
 void log_init();
@@ -191,5 +193,17 @@ void statusbar_draw();
 
 /* Util.c */
 int mvwaddwstr_with_maxwidth(WINDOW *, int, int, const wchar_t *, int);
+
+/* Account.c */
+gboolean account_init();
+void account_destroy();
+gchar ** account_get_names();
+gboolean account_get_profile(gchar *, TpaProfile **);
+void account_add(gchar *, gchar *);
+
+/* Focus.c */
+void focus_set(FamaFocus);
+FamaFocus focus_get();
+
 
 #endif
