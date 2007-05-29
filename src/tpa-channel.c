@@ -1,24 +1,22 @@
 #include "common.h"
 #include <string.h>
 
-
-#define MESSAGE_SENT 0
-#define MESSAGE_RECEIVED 1
+typedef enum {
+	MessageReceived,
+	MessageSent,
+	MessageError,
+} FamaMessageType;
 
 void
-message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
-			 guint a)
+message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message, FamaMessageType type)
 {
 	FamaWindow *win;
 	const gchar *contents, *uri, *time;
 	wchar_t *contents_w, *uri_w, *title;
 	gint title_len;
-
+g_message("msg sent");
 	if ((win = window_find_channel(TPA_CHANNEL(channel))) == NULL) {
-		if (a == MESSAGE_SENT)
-			g_warning("Message sent on non-existant channel!");
-		else
-			g_warning("Message received on non-existant channel!");
+		g_warning("Message on non-existant channel!");
 		return;
 	}
 
@@ -35,7 +33,10 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
 	title = g_new(wchar_t, title_len);
 	swprintf(title, title_len - 1, L"[%s] %ls", time, uri_w);
 
-	window_add_message(win, title, A_BOLD, contents_w);
+	if (type == MessageError)
+		window_add_message(win, title, A_BOLD | COLOR_PAIR(1), contents_w);
+	else
+		window_add_message(win, title, A_BOLD, contents_w);
 
 	g_free(title);
 	g_free(contents_w);
@@ -45,13 +46,19 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
 void
 message_received_cb(TpaTextChannel * channel, TpaTextMessage * message)
 {
-	message_add_text_message(channel, message, MESSAGE_RECEIVED);
+	message_add_text_message(channel, message, MessageReceived);
 }
 
 void
 message_sent_cb(TpaTextChannel * channel, TpaTextMessage * message)
 {
-	message_add_text_message(channel, message, MESSAGE_SENT);
+	message_add_text_message(channel, message, MessageSent);
+}
+
+void
+message_delivery_error_cb(TpaTextChannel * channel, TpaTextMessage * message, TpaTextMessageDeliveryError error)
+{
+	message_add_text_message(channel, message, MessageError);
 }
 
 void
@@ -66,6 +73,8 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 	const gchar *target;
 
 	target = tpa_channel_target_get_uri(tpa_channel_get_target(channel));
+
+	g_message("New channel created with '%s'", target);
 
 	if (tpa_channel_get_channel_type(channel) == TPA_CHANNEL_TYPE_TEXT) {
 		TpaTextChannel *text_channel;
@@ -88,6 +97,8 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 				 G_CALLBACK(message_sent_cb), NULL);
 		g_signal_connect(G_OBJECT(text_channel), "message-received",
 				 G_CALLBACK(message_received_cb), NULL);
+		g_signal_connect(G_OBJECT(text_channel), "message-delivery-error",
+				 G_CALLBACK(message_delivery_error_cb), NULL);
 
 		update_panels();
 		doupdate();
