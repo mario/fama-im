@@ -17,15 +17,20 @@ handle_input_on_command_line(gunichar c)
 			 * window.
 			 */
 
-			win = window_get_current();
+			if (cmdbuf[0] != L'\0') {
+				win = window_get_current();
 
-			if (win->channel != NULL) {
-				gchar *contents;
+				if (win->channel != NULL) {
+					gchar *contents;
 
-				contents = utf8_from_wchar(cmdbuf, NULL, 0);
-				channel_send_message(TPA_TEXT_CHANNEL
-						     (win->channel), contents);
-				g_free(contents);
+					contents =
+						utf8_from_wchar(cmdbuf, NULL,
+								0);
+					channel_send_message(TPA_TEXT_CHANNEL
+							     (win->channel),
+							     contents);
+					g_free(contents);
+				}
 			}
 		} else {
 			gchar *mbscmd, **argv;
@@ -66,7 +71,7 @@ handle_input_on_command_line(gunichar c)
 		commandline_move_cursor(-1);
 	} else if (c == KEY_RIGHT) {
 		commandline_move_cursor(1);
-	} else if (c == '\t') {
+	} else if (c == '\t' || c == KEY_UP || c == KEY_DOWN) {
 		/*
 		 * Ignore for the time being 
 		 */
@@ -97,7 +102,7 @@ handle_input_on_contact_list(gunichar c)
 		/*
 		 * Start conversation with selected contact
 		 */
-		if ((a = contactlist_get_selected()) != NULL)
+		if ((a = contactlist_get_selected()) == NULL)
 			return;
 
 		tpa_connection_create_channel(a->connection,
@@ -125,9 +130,6 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			continue;
 		} else if (unichar == KEY_F(2)) {
 			focus_set(FocusContactList);
-			continue;
-		} else if (unichar == KEY_F(3)) {
-			account_add("jabber", "jonas.broms@jabber.se");
 			continue;
 		}
 

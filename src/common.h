@@ -197,7 +197,7 @@ int mvwaddwstr_with_maxwidth(WINDOW *, int, int, const wchar_t *, int);
 /* Account.c */
 gboolean account_init();
 void account_destroy();
-gchar ** account_get_names();
+gchar **account_get_names();
 gboolean account_get_profile(gchar *, TpaProfile **);
 void account_add(gchar *, gchar *);
 

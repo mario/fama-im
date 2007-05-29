@@ -133,67 +133,21 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 		g_message("Connecting..");
 	} else if (status == TPA_CONNECTION_STATUS_CONNECTED) {
 		TpaUserContact *user;
-		TpaContactList *list;
-		GPtrArray *contacts;
-		GPtrArray *channels;
-		TpaContactPresence contact_presence;
-		const gchar *contact_alias;
-		wchar_t alias[512];
-
-		TpaContact *contact;
-		int i;
 
 		g_message("%s: Connected!", tpa_connection_get_protocol(conn));
 
-		/*
-		 * Get contact-list 
-		 */
-
-		list = tpa_connection_get_contactlist(conn);
-
-		g_signal_connect(G_OBJECT(list), "authorization-requested",
-				 G_CALLBACK
-				 (contactlist_authorization_requested_cb),
-				 NULL);
-
-		g_signal_connect(G_OBJECT(list), "subscription-accepted",
-				 G_CALLBACK
-				 (contactlist_subscription_accepted_cb), NULL);
-
-		contacts = tpa_contact_list_get_known(list);
-
-		for (i = 0; i < contacts->len; i++) {
-			contact = g_ptr_array_index(contacts, i);
-
-			g_signal_connect(G_OBJECT(contact), "presence-updated",
-					 G_CALLBACK
-					 (contactlist_presence_updated_cb),
-					 NULL);
-
-			contact_alias =
-				tpa_contact_base_get_alias(TPA_CONTACT_BASE
-							   (contact));
-			contact_presence =
-				tpa_contact_base_get_presence(TPA_CONTACT_BASE
-							      (contact));
-
-			utf8_to_wchar(contact_alias, alias,
-				      strlen(contact_alias));
-
-			contactlist_add_item(conn, contact, alias,
-					     contactlist_presence_to_attr
-					     (contact_presence));
-		}
+		contactlist_reload_from_server(conn);
 		contactlist_sort();
 		contactlist_draw();
 
-		channels = tpa_connection_get_open_channels(conn);
 		user = tpa_connection_get_user_contact(conn);
 		tpa_user_contact_set_capabilities(user, TPA_CAPABILITY_TEXT);
 	}
 	if (status == TPA_CONNECTION_STATUS_DISCONNECTED) {
 		g_message("Disconnected.");
 		connection_handle_reason(reason);
+		contactlist_remove_from_connection(conn);
+		contactlist_draw();
 		g_ptr_array_remove(connections, conn);
 		tpa_connection_disconnect(conn);
 	}
