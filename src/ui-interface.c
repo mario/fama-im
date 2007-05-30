@@ -15,7 +15,8 @@ init_interface()
 {
 	FamaWindow *mainWin;
 
-	stdscr = initscr();
+	initscr();
+	intrflush(stdscr, FALSE);
 	keypad(stdscr, TRUE);
 	noecho();
 

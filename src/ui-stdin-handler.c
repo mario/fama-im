@@ -125,11 +125,12 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 	while (get_wch(&unichar) != ERR) {
 		f = focus_get();
 
-		if (unichar == KEY_F(1)) {
-			focus_set(FocusCommandLine);
-			continue;
-		} else if (unichar == KEY_F(2)) {
-			focus_set(FocusContactList);
+		/* 0x06 = ctrl-f (in Xorg)
+		 *
+		 */
+		if (unichar == 0x06) {
+			f = (f == FocusCommandLine) ? FocusContactList : FocusCommandLine;
+			focus_set(f);
 			continue;
 		}
 

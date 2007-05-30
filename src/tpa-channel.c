@@ -14,7 +14,7 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message, Fam
 	const gchar *contents, *uri, *time;
 	wchar_t *contents_w, *uri_w, *title;
 	gint title_len;
-g_message("msg sent");
+
 	if ((win = window_find_channel(TPA_CHANNEL(channel))) == NULL) {
 		g_warning("Message on non-existant channel!");
 		return;
