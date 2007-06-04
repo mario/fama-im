@@ -10,9 +10,6 @@ statusbar_draw()
 	gint wbuf_len;
 	ColorSettings *c = color_get();
 
-	if (!interface_is_initialized())
-		return;
-
 	status_str = window_create_status_string();
 	time_str = clock_get_time();
 	wbuf_len = strlen(status_str) + strlen(time_str) + 12;

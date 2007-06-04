@@ -8,7 +8,8 @@ typedef enum {
 } FamaMessageType;
 
 void
-message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message, FamaMessageType type)
+message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
+			 FamaMessageType type)
 {
 	FamaWindow *win;
 	const gchar *contents, *uri, *time;
@@ -34,7 +35,8 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message, Fam
 	swprintf(title, title_len - 1, L"[%s] %ls", time, uri_w);
 
 	if (type == MessageError)
-		window_add_message(win, title, A_BOLD | COLOR_PAIR(1), contents_w);
+		window_add_message(win, title, A_BOLD | COLOR_PAIR(1),
+				   contents_w);
 	else
 		window_add_message(win, title, A_BOLD, contents_w);
 
@@ -56,7 +58,8 @@ message_sent_cb(TpaTextChannel * channel, TpaTextMessage * message)
 }
 
 void
-message_delivery_error_cb(TpaTextChannel * channel, TpaTextMessage * message, TpaTextMessageDeliveryError error)
+message_delivery_error_cb(TpaTextChannel * channel, TpaTextMessage * message,
+			  TpaTextMessageDeliveryError error)
 {
 	message_add_text_message(channel, message, MessageError);
 }
@@ -97,7 +100,8 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 				 G_CALLBACK(message_sent_cb), NULL);
 		g_signal_connect(G_OBJECT(text_channel), "message-received",
 				 G_CALLBACK(message_received_cb), NULL);
-		g_signal_connect(G_OBJECT(text_channel), "message-delivery-error",
+		g_signal_connect(G_OBJECT(text_channel),
+				 "message-delivery-error",
 				 G_CALLBACK(message_delivery_error_cb), NULL);
 
 		update_panels();

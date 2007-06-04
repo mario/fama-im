@@ -68,7 +68,7 @@ if env['CONFIGURE'] == True:
 # Now, build:
 
 for library_name, library_version in libraries:
-    env.ParseConfig ('pkg-config --cflags --libs ' + library_name)
+    env.ParseConfig ('pkg-config --cflags --libs --static ' + library_name)
 
 
 # Append path to ncursesw directory

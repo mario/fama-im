@@ -38,6 +38,11 @@ init_interface()
 		window_set_current(mainWin);
 	}
 
+	/*
+	 * Set initial focus on command-line
+	 */
+	focus_set(FocusCommandLine);
+
 	is_initialized = TRUE;
 }
 
@@ -97,11 +102,6 @@ draw_interface()
 	 * Draw status-bar
 	 */
 	statusbar_draw();
-
-	/*
-	 * Set initial focus on command-line
-	 */
-	focus_set(FocusCommandLine);
 }
 
 gint

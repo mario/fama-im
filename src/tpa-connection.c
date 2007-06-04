@@ -4,6 +4,11 @@
 static void
   status_changed_cb(TpaConnection *, TpaConnectionStatus, TpaConnectionStatusReason);
 
+typedef struct {
+	TpaConnection *connection;
+	gchar *account;
+} FamaConnection;
+
 GPtrArray *connections = NULL;
 
 GPtrArray *
@@ -12,10 +17,25 @@ connection_get_connections()
 	return connections;
 }
 
+gchar *
+connection_get_account(TpaConnection * conn)
+{
+	FamaConnection *connection;
+	gint i;
+
+	for (i = 0; i < connections->len; i++) {
+		connection = g_ptr_array_index(connections, i);
+
+		if (connection->connection == conn)
+			return connection->account;
+	}
+	return NULL;
+}
+
 void
 connection_disconnect_all()
 {
-	TpaConnection *a;
+	FamaConnection *a;
 	gint i;
 
 	if (connections == NULL)
@@ -24,14 +44,19 @@ connection_disconnect_all()
 	for (i = 0; i < connections->len; i++) {
 		a = g_ptr_array_index(connections, i);
 
-		if (a != NULL)
-			tpa_connection_disconnect(a);
+		tpa_connection_disconnect(a->connection);
+		g_free(a->account);
+		g_free(a);
 	}
+
+	g_ptr_array_free(connections, TRUE);
+	connections = NULL;
 }
 
 TpaConnection *
 connection_connect(gchar * account, gchar * password)
 {
+	FamaConnection *connection;
 	TpaParameter *parameter;
 	TpaProfile *profile;
 	TpaConnection *conn;
@@ -43,7 +68,7 @@ connection_connect(gchar * account, gchar * password)
 
 	if (!account_get_profile(account, &profile)) {
 		g_warning("failed to get account profile!");
-		return FALSE;
+		return NULL;
 	}
 
 	parameter = tpa_profile_get_parameter(profile, "password");
@@ -55,7 +80,7 @@ connection_connect(gchar * account, gchar * password)
 						(profile));
 	if (!manager) {
 		g_warning("failed to create Connection Manager!");
-		return FALSE;
+		return NULL;
 	}
 
 	/*
@@ -84,7 +109,11 @@ connection_connect(gchar * account, gchar * password)
 	if (connections == NULL)
 		connections = g_ptr_array_new();
 
-	g_ptr_array_add(connections, conn);
+	connection = g_new(FamaConnection, 1);
+	connection->connection = conn;
+	connection->account = g_strdup_printf("%s", account);
+
+	g_ptr_array_add(connections, connection);
 
 	return conn;
 }
@@ -144,11 +173,27 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 		tpa_user_contact_set_capabilities(user, TPA_CAPABILITY_TEXT);
 	}
 	if (status == TPA_CONNECTION_STATUS_DISCONNECTED) {
+		FamaContactListGroup *group;
+		FamaConnection *connection;
+		gint i;
+
 		g_message("Disconnected.");
 		connection_handle_reason(reason);
-		contactlist_remove_from_connection(conn);
+
+		group = contactlist_get_group(conn);
+		contactlist_remove_group(group);
 		contactlist_draw();
-		g_ptr_array_remove(connections, conn);
 		tpa_connection_disconnect(conn);
+
+		for (i = 0; i < connections->len; i++) {
+			connection = g_ptr_array_index(connections, i);
+
+			if (connection->connection == conn) {
+				g_free(connection->account);
+				g_free(connection);
+				g_ptr_array_remove(connections, connection);
+				break;
+			}
+		}
 	}
 }

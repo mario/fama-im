@@ -10,7 +10,6 @@
 #include <ncurses.h>
 #include <panel.h>
 
-#include <tapioca/tpa-base.h>
 #include <tapioca/tpa-client.h>
 
 typedef enum {
@@ -41,13 +40,19 @@ typedef struct {
 	wchar_t *message;
 } FamaMessage;
 
+
+typedef struct _FamaContactListGroup {
+	TpaConnection *tpa_connection;
+	TpaContactList *tpa_contactlist;
+	GPtrArray *items;
+} FamaContactListGroup;
+
 typedef struct _FamaContactListItem {
+	FamaContactListGroup *parent_group;
 	TpaContact *contact;
-	TpaConnection *connection;
 	wchar_t *text;
 	gint attr;
 } FamaContactListItem;
-
 
 typedef struct {
 	gint borders;
@@ -69,7 +74,7 @@ typedef gboolean(*CommandFunc) (gint argc, gchar ** argv);
 typedef gboolean(*KeyCommandFunc) (gint id);
 
 /* Main.c */
-gboolean init_all(gpointer data);
+gboolean init_all();
 void stop_main_loop(void);
 
 /* Interface.c */
@@ -91,13 +96,17 @@ gint contactlist_get_width();
 void contactlist_draw();
 void contactlist_sort();
 void contactlist_destroy();
-void contactlist_add_item(TpaConnection *, TpaContact *, const wchar_t *, int);
+void contactlist_free();
 void contactlist_scroll(gint);
 void contactlist_presence_updated_cb(TpaContact *, TpaContactPresence, gchar *);
 void contactlist_authorization_requested_cb(TpaContactList *, TpaContact *);
 void contactlist_subscription_accepted_cb(TpaContactList *, TpaContact *);
 guint contactlist_presence_to_attr(TpaContactPresence);
 FamaContactListItem *contactlist_get_selected();
+FamaContactListGroup *contactlist_get_group(TpaConnection *);
+void contactlist_reload_from_server(TpaConnection *);
+void contactlist_remove_group(FamaContactListGroup *);
+
 
 
 /* Utf8.c */
@@ -173,6 +182,8 @@ ColorSettings *color_get();
 /* Connection.c */
 void connection_disconnect_all();
 TpaConnection *connection_connect(gchar *, gchar *);
+gchar *connection_get_account(TpaConnection * conn);
+
 
 
 /* Factory-manager.c */

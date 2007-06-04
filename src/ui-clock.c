@@ -23,7 +23,8 @@ clock_cb(gpointer data)
 	ptr = localtime(&tm);
 	strftime(timebuffer, sizeof(timebuffer) - 1, "%H:%M", ptr);
 
-	statusbar_draw();
+	if (interface_is_initialized())
+		statusbar_draw();
 
 	g_timeout_add((60 - ((guint) tm % 60)) * 1000, clock_cb, NULL);
 

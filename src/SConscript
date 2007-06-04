@@ -3,7 +3,8 @@ import os
 from build_functions import BuildConfigHeader
 
 
-source_files = Split("""main.c
+source_files = Split("""fama-config.h
+			main.c
 			ui-contactlist.c
                         ui-interface.c
                         ui-keyfile.c

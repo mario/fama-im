@@ -92,12 +92,19 @@ account_get_profile(gchar * account, TpaProfile ** profile_ptr)
 		parameter = g_ptr_array_index(keys, i);
 		key = tpa_parameter_get_name(parameter);
 
+		if (g_ascii_strcasecmp(key, "account") == 0)
+			continue;
+
 		v = g_key_file_get_value(accounts, account, key, &err);
-		if (g_ascii_strcasecmp(v, "NULL") == 0) {
-			g_free(v);
-		} else if (err == NULL) {
-			if (!tpa_parameter_set_value_as_string(parameter, v))
-				g_warning("could not set parameter '%s'!", key);
+
+		if (err == NULL) {
+			if (g_ascii_strcasecmp(v, "NULL") != 0) {
+				if (!tpa_parameter_set_value_as_string
+				    (parameter, v))
+					g_warning
+						("could not set parameter '%s'!",
+						 key);
+			}
 			g_free(v);
 		} else {
 			g_warning("could not get key '%s': %s", key,
@@ -157,6 +164,10 @@ account_add(gchar * profile_name, gchar * account)
 	for (i = 0; i < parameters->len; i++) {
 		parameter = g_ptr_array_index(parameters, i);
 		name = tpa_parameter_get_name(parameter);
+
+		if (g_ascii_strcasecmp(name, "account") == 0)
+			continue;
+
 		v = tpa_parameter_get_default_value_as_string(parameter);
 
 		if (v == NULL)

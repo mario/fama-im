@@ -11,17 +11,27 @@ main(int argc, char **argv)
 {
 	g_type_init();
 
+	tpa_thread_init(FALSE);
+
 	loop = g_main_loop_new(NULL, FALSE);
 
-	g_idle_add(init_all, NULL);
+	/*
+	 * Main looks prettier this way ;-)
+	 */
+	if (init_all() == FALSE)
+		return 0;
 
 	g_main_loop_run(loop);
 	g_main_loop_unref(loop);
 
+	/*
+	 * Kill the memory!!!!
+	 */
 	destroy_interface();
 	connection_disconnect_all();
 	account_destroy();
 	manager_factory_destroy();
+	contactlist_free();
 	tpa_thread_shutdown(FALSE);
 
 	return 0;
@@ -35,7 +45,7 @@ stop_main_loop()
 }
 
 gboolean
-init_all(gpointer data)
+init_all()
 {
 	GError *err = NULL;
 	gint a;
@@ -56,6 +66,18 @@ init_all(gpointer data)
 	 */
 
 	g_message("Fama v%s (c) 2007 Jonas Broms", VERSION_STRING);
+
+	/*
+	 * Check wether a D-Bus session is available or not
+	 */
+	if (g_getenv("DBUS_SESSION_BUS_ADDRESS") == NULL) {
+		g_warning
+			("There is no D-Bus session is available for this session!");
+		g_warning
+			("Run 'export `dbus-launch --exit-with-session`' to start one.");
+		return FALSE;
+	}
+
 
 	/*
 	 * Read configuration file (and act accordingly)
@@ -138,7 +160,7 @@ init_all(gpointer data)
 	signal_handler_setup();
 
 	/*
-	 * Registering commands 
+	 * Register commands 
 	 */
 
 	command_init();
@@ -161,8 +183,5 @@ init_all(gpointer data)
 
 	draw_interface();
 
-	/*
-	 * Return FALSE so that the function isn't ran again
-	 */
-	return FALSE;
+	return TRUE;
 }

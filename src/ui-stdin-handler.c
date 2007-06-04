@@ -105,7 +105,7 @@ handle_input_on_contact_list(gunichar c)
 		if ((a = contactlist_get_selected()) == NULL)
 			return;
 
-		tpa_connection_create_channel(a->connection,
+		tpa_connection_create_channel(a->parent_group->tpa_connection,
 					      TPA_CHANNEL_TYPE_TEXT,
 					      TPA_CHANNEL_TARGET(a->contact));
 
@@ -125,11 +125,14 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 	while (get_wch(&unichar) != ERR) {
 		f = focus_get();
 
-		/* 0x06 = ctrl-f (in Xorg)
-		 *
+		/*
+		 * 0x06 = ctrl-f (in Xorg)
+		 * *
 		 */
 		if (unichar == 0x06) {
-			f = (f == FocusCommandLine) ? FocusContactList : FocusCommandLine;
+			f = (f ==
+			     FocusCommandLine) ? FocusContactList :
+			   FocusCommandLine;
 			focus_set(f);
 			continue;
 		}
