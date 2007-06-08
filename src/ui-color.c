@@ -73,10 +73,6 @@ color_init()
 
 	settings.borders = color_with_fallback("borders", COLOR_PAIR(6));
 	settings.command_line = color_with_fallback("command_line", 0);
-	settings.dialog_text =
-		color_with_fallback("dialog_text", COLOR_PAIR(7));
-	settings.dialog_background =
-		color_with_fallback("dialog_background", COLOR_PAIR(4));
 	settings.window_title =
 		color_with_fallback("window_title", COLOR_PAIR(3));
 	settings.message_heading =

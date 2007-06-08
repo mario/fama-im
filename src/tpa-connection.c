@@ -180,8 +180,9 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 		g_message("Disconnected.");
 		connection_handle_reason(reason);
 
-		group = contactlist_get_group(conn);
-		contactlist_remove_group(group);
+		if ((group = contactlist_get_group(conn)))
+			contactlist_remove_group(group);
+
 		contactlist_draw();
 		tpa_connection_disconnect(conn);
 

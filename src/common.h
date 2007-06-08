@@ -12,21 +12,28 @@
 
 #include <tapioca/tpa-client.h>
 
+/**
+ * FamaWindowType Enum.
+ * Specifies the type of content of a window.
+ */
 typedef enum {
 	WindowTypeMain,
 	WindowTypeConversation,
 } FamaWindowType;
 
+/**
+ * FamaWindow data-type.
+ */
 typedef struct {
-	WINDOW *ncwin;
-	PANEL *ncpanel;
+	WINDOW *ncwin; /**< NCurses WINDOW pointer */
+	PANEL *ncpanel; /**< NCurses PANEL pointer */
 
-	wchar_t *title;
-	GPtrArray *messages;
-	FamaWindowType type;
-	gboolean is_updated;
+	wchar_t *title; /**< The title of the window */
+	GPtrArray *messages; /**< An array of FamaMessage data-types */
+	FamaWindowType type; /**< The FamaWindowType of the window */
+	gboolean is_updated; /**< True if window has unread messages */
 
-	TpaChannel *channel;
+	TpaChannel *channel; /**< The channel associated with the window */
 } FamaWindow;
 
 typedef enum {
@@ -57,8 +64,6 @@ typedef struct _FamaContactListItem {
 typedef struct {
 	gint borders;
 	gint command_line;
-	gint dialog_text;
-	gint dialog_background;
 	gint window_title;
 	gint message_heading;
 	gint message_text;
@@ -71,7 +76,6 @@ typedef struct {
 } ColorSettings;
 
 typedef gboolean(*CommandFunc) (gint argc, gchar ** argv);
-typedef gboolean(*KeyCommandFunc) (gint id);
 
 /* Main.c */
 gboolean init_all();
@@ -169,11 +173,6 @@ void log_get_time(gchar *, gsize);
 void command_init();
 void command_add(gchar *, CommandFunc);
 gboolean command_execute(gint, gchar **);
-
-/* Key-command.c */
-void key_command_init();
-void key_command_add(gint id, KeyCommandFunc);
-gboolean key_command_execute(gint id);
 
 /* Color.c */
 void color_init();
