@@ -13,7 +13,7 @@
 #include <tapioca/tpa-client.h>
 
 /**
- * FamaWindowType Enum.
+ * FamaWindowType enumeration.
  * Specifies the type of content of a window.
  */
 typedef enum {
@@ -22,7 +22,7 @@ typedef enum {
 } FamaWindowType;
 
 /**
- * FamaWindow data-type.
+ * FamaWindow.
  */
 typedef struct {
 	WINDOW *ncwin; /**< NCurses WINDOW pointer */
@@ -36,45 +36,70 @@ typedef struct {
 	TpaChannel *channel; /**< The channel associated with the window */
 } FamaWindow;
 
+/**
+ * FamaFocus enumeration.
+ * Specifies where the focus of the cursor will be set.
+ */
 typedef enum {
 	FocusContactList,
 	FocusCommandLine,
 } FamaFocus;
 
+/**
+ * FamaMessage.
+ * A window's content consists of a GPtrArray of this type.
+ */
 typedef struct {
-	gint attr;
-	wchar_t *title;
-	wchar_t *message;
+	gint attr; /**< Attribute of the title */
+	wchar_t *title; /**< Title of the message */
+	wchar_t *message; /**< Message string */
 } FamaMessage;
 
-
+/**
+ * FamaContactListGroup.
+ * The contact-list contains an array of groups, which in turn
+ * contain the actual items.
+ */
 typedef struct _FamaContactListGroup {
-	TpaConnection *tpa_connection;
-	TpaContactList *tpa_contactlist;
-	GPtrArray *items;
+	TpaConnection *tpa_connection; /**< TpaConnection associated with the group */
+	TpaContactList *tpa_contactlist; /**< TpaContactList associated with the group */
+	GPtrArray *items; /**< An array of FamaContactListItem's */
 } FamaContactListGroup;
 
+/**
+ * FamaContactListItem.
+ * An item in the contact-list, returned by contactlist_get_selected() 
+ */
 typedef struct _FamaContactListItem {
-	FamaContactListGroup *parent_group;
-	TpaContact *contact;
-	wchar_t *text;
-	gint attr;
+	FamaContactListGroup *parent_group; /**< Parent group of the item */
+	TpaContact *contact; /**< TpaContact associated with the item */
+	wchar_t *text; /**< Text displayed in the contact-list */
+	gint attr; /**< Attribute of the text displayed in the contact-list */
 } FamaContactListItem;
 
+
+/**
+ * ColorSettings.
+ * Each element contains an attribute for use with wattron()
+ */
 typedef struct {
-	gint borders;
-	gint command_line;
-	gint window_title;
-	gint message_heading;
-	gint message_text;
-	gint status_available;
-	gint status_away;
-	gint status_busy;
-	gint status_idle;
-	gint status_offline;
-	gint status_other;
+	gint borders; /**< Bars and borders */
+	gint command_line; /**< Command line */
+	gint window_title; /**< Title of the conversation windows */
+	gint message_heading; /**< Title of a message */
+	gint message_text; /**< Message body */
+	gint status_available; /** Contact-list status 'available' */
+	gint status_away; /** Contact-list status 'away' */
+	gint status_busy; /** Contact-list status 'busy' */
+	gint status_idle; /** Contact-list status 'idle' */
+	gint status_offline; /** Contact-list status 'offline' */
+	gint status_other; /** Contact-list other or unrecognized statuses */
 } ColorSettings;
 
+/**
+ * CommandFunc.
+ * Used by command-parser
+ */
 typedef gboolean(*CommandFunc) (gint argc, gchar ** argv);
 
 /* Main.c */
