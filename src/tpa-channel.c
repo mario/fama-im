@@ -11,10 +11,13 @@ void
 message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
 			 FamaMessageType type)
 {
+	ColorSettings *c;
 	FamaWindow *win;
 	const gchar *contents, *uri, *time;
 	wchar_t *contents_w, *uri_w, *title;
-	gint title_len;
+	gint title_len, attr;
+
+	c = color_get();
 
 	if ((win = window_find_channel(TPA_CHANNEL(channel))) == NULL) {
 		g_warning("Message on non-existant channel!");
@@ -34,11 +37,14 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
 	title = g_new(wchar_t, title_len);
 	swprintf(title, title_len - 1, L"[%s] %ls", time, uri_w);
 
-	if (type == MessageError)
-		window_add_message(win, title, A_BOLD | COLOR_PAIR(1),
-				   contents_w);
+	if (type == MessageSent)
+		attr = c->outgoing_message;
+	else if (type == MessageReceived)
+		attr = c->incoming_message;
 	else
-		window_add_message(win, title, A_BOLD, contents_w);
+		attr = COLOR_PAIR(1);
+
+	window_add_message(win, title, A_BOLD | attr, contents_w);
 
 	g_free(title);
 	g_free(contents_w);
@@ -80,6 +86,7 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 	g_message("New channel created with '%s'", target);
 
 	if (tpa_channel_get_channel_type(channel) == TPA_CHANNEL_TYPE_TEXT) {
+		GPtrArray *messages;
 		TpaTextChannel *text_channel;
 		FamaWindow *win;
 		wchar_t *target_w;
@@ -95,6 +102,18 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 		window_set_title(win, target_w);
 		g_free(target_w);
 		window_draw_title_bar();
+
+		messages = tpa_text_channel_get_pending (text_channel, TRUE);
+		if (messages) {
+			TpaTextMessage *message;
+			gint i;
+
+			for (i = 0; i < messages->len; i++) {
+				message = g_ptr_array_index (messages, i);
+				message_add_text_message(text_channel, message, MessageReceived);
+			}
+		}
+
 
 		g_signal_connect(G_OBJECT(text_channel), "message-sent",
 				 G_CALLBACK(message_sent_cb), NULL);

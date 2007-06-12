@@ -86,8 +86,8 @@ typedef struct {
 	gint borders; /**< Bars and borders */
 	gint command_line; /**< Command line */
 	gint window_title; /**< Title of the conversation windows */
-	gint message_heading; /**< Title of a message */
-	gint message_text; /**< Message body */
+	gint outgoing_message; /**< Outgoing message title */
+	gint incoming_message; /**< Incoming message title */
 	gint status_available; /** Contact-list status 'available' */
 	gint status_away; /** Contact-list status 'away' */
 	gint status_busy; /** Contact-list status 'busy' */

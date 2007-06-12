@@ -71,13 +71,16 @@ color_init()
 	init_pair(7, COLOR_WHITE, background);
 	init_pair(8, -1, background);
 
-	settings.borders = color_with_fallback("borders", COLOR_PAIR(6));
-	settings.command_line = color_with_fallback("command_line", 0);
+	settings.borders =
+		color_with_fallback("borders", COLOR_PAIR(6));
+	settings.command_line =
+		color_with_fallback("command_line", 0);
 	settings.window_title =
 		color_with_fallback("window_title", COLOR_PAIR(3));
-	settings.message_heading =
-		color_with_fallback("message_heading", COLOR_PAIR(2));
-	settings.message_text = color_with_fallback("message_text", 0);
+	settings.outgoing_message =
+		color_with_fallback("outgoing_message", COLOR_PAIR(2));
+	settings.incoming_message =
+		color_with_fallback("incoming_message", COLOR_PAIR(6));
 	settings.status_available =
 		color_with_fallback("status_available", COLOR_PAIR(2));
 	settings.status_away =
@@ -86,7 +89,8 @@ color_init()
 		color_with_fallback("status_idle", COLOR_PAIR(3));
 	settings.status_busy =
 		color_with_fallback("status_busy", COLOR_PAIR(5));
-	settings.status_offline = color_with_fallback("status_offline", 0);
+	settings.status_offline =
+		color_with_fallback("status_offline", 0);
 	settings.status_other =
 		color_with_fallback("status_available", COLOR_PAIR(1));
 }
