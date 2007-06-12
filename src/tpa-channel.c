@@ -91,6 +91,7 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 		FamaWindow *win;
 		wchar_t *target_w;
 
+		tpa_channel_join(channel);
 		text_channel = TPA_TEXT_CHANNEL(channel);
 
 		win = window_new(WindowTypeConversation);
