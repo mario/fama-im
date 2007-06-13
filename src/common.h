@@ -206,7 +206,8 @@ ColorSettings *color_get();
 /* Connection.c */
 void connection_disconnect_all();
 TpaConnection *connection_connect(gchar *, gchar *);
-gchar *connection_get_account(TpaConnection * conn);
+gchar *connection_get_account_from_connection(TpaConnection *);
+TpaConnection *connection_get_connection_from_account(gchar *);
 
 
 

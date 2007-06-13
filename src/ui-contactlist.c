@@ -469,7 +469,7 @@ contactlist_reload_from_server(TpaConnection * conn)
 			 G_CALLBACK
 			 (contactlist_subscription_accepted_cb), NULL);
 
-	account = connection_get_account(conn);
+	account = connection_get_account_from_connection(conn);
 	group = contactlist_add_group(conn, list, account);
 
 	for (i = 0; i < contacts->len; i++) {

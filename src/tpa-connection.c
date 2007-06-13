@@ -18,7 +18,7 @@ connection_get_connections()
 }
 
 gchar *
-connection_get_account(TpaConnection * conn)
+connection_get_account_from_connection(TpaConnection * conn)
 {
 	FamaConnection *connection;
 	gint i;
@@ -28,6 +28,21 @@ connection_get_account(TpaConnection * conn)
 
 		if (connection->connection == conn)
 			return connection->account;
+	}
+	return NULL;
+}
+
+TpaConnection *
+connection_get_connection_from_account(gchar *account)
+{
+	FamaConnection *connection;
+	gint i;
+
+	for (i = 0; i < connections->len; i++) {
+		connection = g_ptr_array_index(connections, i);
+
+		if (g_ascii_strcasecmp(connection->account, account) == 0)
+			return connection->connection;
 	}
 	return NULL;
 }

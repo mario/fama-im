@@ -22,7 +22,7 @@ source_files = Split("""fama-config.h
 			ui-util.c
 			ui-focus.c
 
-			ui-command-list.c
+			ui-command-status.c
 			ui-command-connect.c
 			ui-command-account.c
 
