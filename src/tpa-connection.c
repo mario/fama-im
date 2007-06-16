@@ -4,11 +4,6 @@
 static void
   status_changed_cb(TpaConnection *, TpaConnectionStatus, TpaConnectionStatusReason);
 
-typedef struct {
-	TpaConnection *connection;
-	gchar *account;
-} FamaConnection;
-
 GPtrArray *connections = NULL;
 
 GPtrArray *

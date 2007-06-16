@@ -37,6 +37,15 @@ typedef struct {
 } FamaWindow;
 
 /**
+ * FamaConnection.
+ */
+typedef struct {
+        TpaConnection *connection;
+        gchar *account;
+} FamaConnection;
+
+
+/**
  * FamaFocus enumeration.
  * Specifies where the focus of the cursor will be set.
  */
@@ -208,8 +217,7 @@ void connection_disconnect_all();
 TpaConnection *connection_connect(gchar *, gchar *);
 gchar *connection_get_account_from_connection(TpaConnection *);
 TpaConnection *connection_get_connection_from_account(gchar *);
-
-
+GPtrArray *connection_get_connections();
 
 /* Factory-manager.c */
 TpaManagerFactory *manager_factory_get();

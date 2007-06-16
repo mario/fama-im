@@ -96,13 +96,17 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 
 		win = window_new(WindowTypeConversation);
 		win->channel = channel;
-		window_set_current(win);
+		win->is_updated = TRUE;
+
+		/* uncomment to automatically change current window */
+		/* window_set_current(win); */
 
 		target_w = g_new(wchar_t, strlen(target) + 1);
 		utf8_to_wchar(target, target_w, strlen(target));
 		window_set_title(win, target_w);
 		g_free(target_w);
 		window_draw_title_bar();
+		statusbar_draw();
 
 		messages = tpa_text_channel_get_pending (text_channel, TRUE);
 		if (messages) {

@@ -24,47 +24,54 @@ _string_to_presence(gchar *string)
 gboolean
 command_func_status(gint argc, gchar ** argv)
 {
-	TpaConnection *conn;
 	TpaContactPresence presence;
 	TpaUserContact *user;
+	GPtrArray *connections;
+	FamaConnection *conn;
 	gboolean success;
+	gint i;
 
-	if (argc < 3) {
-		g_warning("usage: status <account> <status> <message>\n"
+	if (argc < 2) {
+		g_warning("usage: status <status> <message>\n"
 			  "where <status> is available, away, busy, hidden or offline.\n"
 			  "The <message> parameter is optional.");
 
 		return FALSE;
 	}
 
-	conn = connection_get_connection_from_account(argv[1]);
-	if (!conn) {
-		g_warning("%s is not connected! Connect with /connect <account>.", argv[1]);
+	connections = connection_get_connections();
+	if (!connections) {
+		g_warning("no connections available!");
 		return FALSE;
 	}
 
-	user = tpa_connection_get_user_contact (conn);
+	presence = _string_to_presence (argv[1]);
+	if (!presence) {
+		g_warning("Unrecognized presence string '%s'", argv[1]);
+		return FALSE;
+	}
+
+	for (i = 0; i < connections->len; i++) {
+	conn = g_ptr_array_index(connections, i);
+
+	user = tpa_connection_get_user_contact (conn->connection);
 	g_assert(user);
 
-	presence = _string_to_presence (argv[2]);
-	if (!presence) {
-		g_warning("Unrecognized presence string '%s'", argv[2]);
-		return FALSE;
-	}
-
-	if (argc >= 4) {
-		success = tpa_user_contact_set_presence_with_message(user, presence, argv[3]);
+	if (argc >= 3) {
+		success = tpa_user_contact_set_presence_with_message(user, presence, argv[2]);
 		if (success)
-			g_message("Presence set to %s - '%s'", argv[2], argv[3]);
+			g_message("%s: Presence set to %s - '%s'", conn->account, argv[1], argv[2]);
 	} else {
 		success = tpa_user_contact_set_presence(user, presence);
 		if (success)
-			g_message("Presence set to '%s'", argv[2]);
+			g_message("%s: Presence set to '%s'", conn->account, argv[1]);
 	}
 
 	if (!success) {
 		g_warning("Could not set contact presence.");
 		return FALSE;
+	}
+
 	}
 
 	return TRUE;
