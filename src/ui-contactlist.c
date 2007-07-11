@@ -43,10 +43,15 @@ contactlist_draw()
 
 	if (!groups)
 		return;
-	if (groups->len < 1)
-		return;
 
 	werase(clistwin);
+
+	if (groups->len < 1) {
+		update_panels();
+		doupdate();
+		return;
+	}
+
 
 	/*
 	 * Determine the start group depending on the offset
