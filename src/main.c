@@ -65,7 +65,8 @@ init_all()
 	 * Print version information
 	 */
 
-	g_message("Fama v%s (c) 2007 Mario Danic & Jonas Broms", VERSION_STRING);
+	g_message("Fama v%s (c) 2007 Mario Danic & Jonas Broms",
+		  VERSION_STRING);
 
 	/*
 	 * Check wether a D-Bus session is available or not

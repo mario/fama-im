@@ -1,7 +1,7 @@
 #include "common.h"
 
 TpaContactPresence
-_string_to_presence(gchar *string)
+_string_to_presence(gchar * string)
 {
 	if (g_ascii_strcasecmp(string, "available") == 0)
 		return TPA_PRESENCE_AVAILABLE;
@@ -45,32 +45,38 @@ command_func_status(gint argc, gchar ** argv)
 		return FALSE;
 	}
 
-	presence = _string_to_presence (argv[1]);
+	presence = _string_to_presence(argv[1]);
 	if (!presence) {
 		g_warning("Unrecognized presence string '%s'", argv[1]);
 		return FALSE;
 	}
 
 	for (i = 0; i < connections->len; i++) {
-	conn = g_ptr_array_index(connections, i);
+		conn = g_ptr_array_index(connections, i);
 
-	user = tpa_connection_get_user_contact (conn->connection);
-	g_assert(user);
+		user = tpa_connection_get_user_contact(conn->connection);
+		g_assert(user);
 
-	if (argc >= 3) {
-		success = tpa_user_contact_set_presence_with_message(user, presence, argv[2]);
-		if (success)
-			g_message("%s: Presence set to %s - '%s'", conn->account, argv[1], argv[2]);
-	} else {
-		success = tpa_user_contact_set_presence(user, presence);
-		if (success)
-			g_message("%s: Presence set to '%s'", conn->account, argv[1]);
-	}
+		if (argc >= 3) {
+			success =
+				tpa_user_contact_set_presence_with_message(user,
+									   presence,
+									   argv
+									   [2]);
+			if (success)
+				g_message("%s: Presence set to %s - '%s'",
+					  conn->account, argv[1], argv[2]);
+		} else {
+			success = tpa_user_contact_set_presence(user, presence);
+			if (success)
+				g_message("%s: Presence set to '%s'",
+					  conn->account, argv[1]);
+		}
 
-	if (!success) {
-		g_warning("Could not set contact presence.");
-		return FALSE;
-	}
+		if (!success) {
+			g_warning("Could not set contact presence.");
+			return FALSE;
+		}
 
 	}
 

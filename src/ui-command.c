@@ -10,6 +10,7 @@ gboolean command_func_help(gint argc, gchar ** argv);
 gboolean command_func_connect(gint argc, gchar ** argv);
 gboolean command_func_quit(gint argc, gchar ** argv);
 gboolean command_func_account(gint argc, gchar ** argv);
+gboolean command_func_contact(gint argc, gchar ** argv);
 gboolean command_func_status(gint argc, gchar ** argv);
 
 /*
@@ -127,6 +128,7 @@ command_init()
 	command_add("connect", command_func_connect);
 	command_add("account", command_func_account);
 	command_add("status", command_func_status);
+	command_add("contact", command_func_contact);
 }
 
 /*

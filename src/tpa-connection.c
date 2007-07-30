@@ -28,7 +28,7 @@ connection_get_account_from_connection(TpaConnection * conn)
 }
 
 TpaConnection *
-connection_get_connection_from_account(gchar *account)
+connection_get_connection_from_account(gchar * account)
 {
 	FamaConnection *connection;
 	gint i;

@@ -25,9 +25,11 @@ source_files = Split("""fama-config.h
 			ui-command-status.c
 			ui-command-connect.c
 			ui-command-account.c
+                        ui-command-contact.c
 
 			tpa-connection.c
 			tpa-account.c
+                        tpa-contact.c
 			tpa-manager-factory.c
 			tpa-channel.c""")
 

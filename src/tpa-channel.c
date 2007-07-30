@@ -98,8 +98,12 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 		win->channel = channel;
 		win->is_updated = TRUE;
 
-		/* uncomment to automatically change current window */
-		/* window_set_current(win); */
+		/*
+		 * uncomment to automatically change current window 
+		 */
+		/*
+		 * window_set_current(win); 
+		 */
 
 		target_w = g_new(wchar_t, strlen(target) + 1);
 		utf8_to_wchar(target, target_w, strlen(target));
@@ -108,14 +112,15 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 		window_draw_title_bar();
 		statusbar_draw();
 
-		messages = tpa_text_channel_get_pending (text_channel, TRUE);
+		messages = tpa_text_channel_get_pending(text_channel, TRUE);
 		if (messages) {
 			TpaTextMessage *message;
 			gint i;
 
 			for (i = 0; i < messages->len; i++) {
-				message = g_ptr_array_index (messages, i);
-				message_add_text_message(text_channel, message, MessageReceived);
+				message = g_ptr_array_index(messages, i);
+				message_add_text_message(text_channel, message,
+							 MessageReceived);
 			}
 		}
 

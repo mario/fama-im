@@ -21,16 +21,24 @@ typedef enum {
 	WindowTypeConversation,
 } FamaWindowType;
 
+
+
+
 /**
  * FamaWindow.
  */
 typedef struct {
-	WINDOW *ncwin; /**< NCurses WINDOW pointer */
-	PANEL *ncpanel; /**< NCurses PANEL pointer */
 
-	wchar_t *title; /**< The title of the window */
+	WINDOW *ncwin; /**< NCurses WINDOW pointer */
+
+	PANEL *ncpanel;	/**< NCurses PANEL pointer */
+
+	wchar_t *title;	/**< The title of the window */
+
 	GPtrArray *messages; /**< An array of FamaMessage data-types */
+
 	FamaWindowType type; /**< The FamaWindowType of the window */
+
 	gboolean is_updated; /**< True if window has unread messages */
 
 	TpaChannel *channel; /**< The channel associated with the window */
@@ -40,8 +48,8 @@ typedef struct {
  * FamaConnection.
  */
 typedef struct {
-        TpaConnection *connection;
-        gchar *account;
+	TpaConnection *connection;
+	gchar *account;
 } FamaConnection;
 
 
@@ -59,8 +67,11 @@ typedef enum {
  * A window's content consists of a GPtrArray of this type.
  */
 typedef struct {
+
 	gint attr; /**< Attribute of the title */
-	wchar_t *title; /**< Title of the message */
+
+	wchar_t *title;	/**< Title of the message */
+
 	wchar_t *message; /**< Message string */
 } FamaMessage;
 
@@ -70,8 +81,11 @@ typedef struct {
  * contain the actual items.
  */
 typedef struct _FamaContactListGroup {
+
 	TpaConnection *tpa_connection; /**< TpaConnection associated with the group */
+
 	TpaContactList *tpa_contactlist; /**< TpaContactList associated with the group */
+
 	GPtrArray *items; /**< An array of FamaContactListItem's */
 } FamaContactListGroup;
 
@@ -80,9 +94,13 @@ typedef struct _FamaContactListGroup {
  * An item in the contact-list, returned by contactlist_get_selected() 
  */
 typedef struct _FamaContactListItem {
+
 	FamaContactListGroup *parent_group; /**< Parent group of the item */
+
 	TpaContact *contact; /**< TpaContact associated with the item */
+
 	wchar_t *text; /**< Text displayed in the contact-list */
+
 	gint attr; /**< Attribute of the text displayed in the contact-list */
 } FamaContactListItem;
 
@@ -92,16 +110,27 @@ typedef struct _FamaContactListItem {
  * Each element contains an attribute for use with wattron()
  */
 typedef struct {
+
 	gint borders; /**< Bars and borders */
+
 	gint command_line; /**< Command line */
+
 	gint window_title; /**< Title of the conversation windows */
+
 	gint outgoing_message; /**< Outgoing message title */
+
 	gint incoming_message; /**< Incoming message title */
+
 	gint status_available; /** Contact-list status 'available' */
+
 	gint status_away; /** Contact-list status 'away' */
+
 	gint status_busy; /** Contact-list status 'busy' */
+
 	gint status_idle; /** Contact-list status 'idle' */
+
 	gint status_offline; /** Contact-list status 'offline' */
+
 	gint status_other; /** Contact-list other or unrecognized statuses */
 } ColorSettings;
 
@@ -237,6 +266,11 @@ void statusbar_draw();
 
 /* Util.c */
 int mvwaddwstr_with_maxwidth(WINDOW *, int, int, const wchar_t *, int);
+
+/* Contact.c */
+gboolean contact_add(gchar *, gchar *);
+gboolean contact_remove(const gchar *, const gchar *);
+gboolean contact_authorize(const gchar *, const gchar *);
 
 /* Account.c */
 gboolean account_init();

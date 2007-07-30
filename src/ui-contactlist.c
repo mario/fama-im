@@ -308,8 +308,10 @@ void
 contactlist_authorization_requested_cb(TpaContactList * list,
 				       TpaContact * contact)
 {
-	g_message("%s has requested your authorization",
-		  tpa_contact_base_get_alias(TPA_CONTACT_BASE(contact)));
+	gchar *uri;
+
+	uri = tpa_channel_target_get_uri(TPA_CHANNEL_TARGET(contact));
+	g_message("%s has requested your authorization", uri);
 }
 
 
