@@ -2,7 +2,10 @@
 #include <glib/gstdio.h>
 
 #include "common.h"
-#include "fama-config.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 GMainLoop *loop;
 
@@ -66,7 +69,7 @@ init_all()
 	 */
 
 	g_message("Fama v%s (c) 2007 Mario Danic & Jonas Broms",
-		  VERSION_STRING);
+		  VERSION);
 
 	/*
 	 * Check wether a D-Bus session is available or not
