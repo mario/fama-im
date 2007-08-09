@@ -28,7 +28,7 @@ def configure(conf):
     conf.write_config_header('config.h')
 
 def build(bld):
-    obj = bld.create_ob('c', 'program')
+    obj = bld.create_obj('c', 'program')
     find.sources_in_dirs("src")
     obj.target = 'fama'
 
