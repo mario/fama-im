@@ -19,6 +19,15 @@ def configure(conf):
     conf.check_header('panel.h')
     conf.check_header('ncursesw/ncurses.h')
 
+    conf.env['LIB_NCURSES'] = "ncurses"
+    conf.env['LIBPATH_NCURSES'] = '/usr/include'
+
+    conf.env['LIB_NCURSESW'] = "ncursesw"
+    conf.env['LIBPATH_NCURSESW'] = '/usr/include'
+
+    conf.env['LIB_PANEL'] = "panel"
+    conf.env['LIBPATH_PANEL'] = '/usr/include'
+
     conf.add_define('VERSION', VERSION)
     conf.add_define('MAJORMINOR', '.'.join(VERSION.split('.')[0:2]))
     

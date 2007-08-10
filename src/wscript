@@ -4,5 +4,5 @@ def build(bld):
     obj = bld.create_obj('cc', 'program')
     obj.find_sources_in_dirs(".")
     obj.target = 'fama'
-    obj.uselib = 'GLIB GOBJECT LIBTAPIOCA-CLIENT-GLIB' 
+    obj.uselib = 'GLIB GOBJECT LIBTAPIOCA-CLIENT-GLIB NCURSES NCURSESW PANEL' 
 
