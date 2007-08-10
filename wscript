@@ -19,8 +19,8 @@ def configure(conf):
     conf.check_header('panel.h')
     conf.check_header('ncursesw/ncurses.h')
 
-    conf.add_define('ERBISC_VERSION', VERSION)
-    conf.add_define('ERBISC_MAJORMINOR', '.'.join(VERSION.split('.')[0:2]))
+    conf.add_define('VERSION', VERSION)
+    conf.add_define('MAJORMINOR', '.'.join(VERSION.split('.')[0:2]))
     
     conf.add_define('PACKAGE', APPNAME)
 
