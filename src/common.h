@@ -269,8 +269,8 @@ int mvwaddwstr_with_maxwidth(WINDOW *, int, int, const wchar_t *, int);
 
 /* Contact.c */
 gboolean contact_add(gchar *, gchar *);
-gboolean contact_remove(const gchar *, const gchar *);
-gboolean contact_authorize(const gchar *, const gchar *);
+gboolean contact_remove(gchar *, gchar *);
+gboolean contact_authorize(gchar *, gchar *);
 
 /* Account.c */
 gboolean account_init();
