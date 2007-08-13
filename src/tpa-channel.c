@@ -24,11 +24,16 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
 		return;
 	}
 
-        contents = tpa_text_message_get_contents(message);
-        uri = tpa_text_message_get_uri(message);
-        time = clock_get_time();
-        account = tpa_channel_target_get_uri(TPA_CHANNEL_TARGET(tpa_channel_get_owner(&channel->parent)));
-        contact = tpa_channel_target_get_uri(tpa_channel_get_target(&channel->parent));
+	contents = tpa_text_message_get_contents(message);
+	uri = tpa_text_message_get_uri(message);
+	time = clock_get_time();
+	account =
+		tpa_channel_target_get_uri(TPA_CHANNEL_TARGET
+					   (tpa_channel_get_owner
+					    (&channel->parent)));
+	contact =
+		tpa_channel_target_get_uri(tpa_channel_get_target
+					   (&channel->parent));
 
 	contents_w = g_new(wchar_t, strlen(contents) + 1);
 	uri_w = g_new(wchar_t, strlen(uri) + 1);
@@ -48,8 +53,8 @@ message_add_text_message(TpaTextChannel * channel, TpaTextMessage * message,
 
 	window_add_message(win, title, A_BOLD | attr, contents_w);
 
-        if (get_logging() == TRUE)
-             write_to_log(account, contact, uri, contents, time);
+	if (get_logging() == TRUE)
+		write_to_log(account, contact, uri, contents, time);
 
 	g_free(title);
 	g_free(contents_w);

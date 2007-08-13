@@ -180,6 +180,10 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			break;
 		}
 
+		if (unichar <= 31) {
+			continue;
+		}
+
 		switch (f) {
 		case FocusCommandLine:
 			handle_input_on_command_line(unichar);
