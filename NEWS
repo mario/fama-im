@@ -6,6 +6,8 @@ FamaIM 0.0.2 (Tue Aug 13 2007)
    * Additional shortcuts (ctrl+w,
      ctrl+n, ctrl+b)
    * Switched build system to waf
+   * Improved account facility
+     (protocols listing)
 
 FamaIM 0.0.1 (Sat Jul 07 2007)
 
