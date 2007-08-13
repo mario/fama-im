@@ -275,3 +275,11 @@ window_resize_all()
 	update_panels();
 	doupdate();
 }
+gint
+get_window_index(FamaWindow * window){
+     gint i;
+     for (i = 0; i < window_list->len; i++)
+          if (g_ptr_array_index(window_list, i) == window)
+               return i;
+     return 0;
+}

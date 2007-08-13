@@ -22,8 +22,6 @@ typedef enum {
 } FamaWindowType;
 
 
-
-
 /**
  * FamaWindow.
  */
@@ -225,7 +223,7 @@ void window_draw_title_bar();
 void window_destroy(FamaWindow *);
 void window_resize_all();
 gchar *window_create_status_string();
-
+gint get_window_index(FamaWindow *);
 #define window_get_main() window_get_index(0)
 
 /* Log.c */
