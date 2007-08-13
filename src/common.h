@@ -207,6 +207,7 @@ gboolean keyfile_write();
 GKeyFile *keyfile_get();
 
 #define FAMA_CONFIG_DIR                 ".fama"
+#define FAMA_LOGFILE_DIR                "logs"
 #define FAMA_CONFIG_FILE                "config"
 #define FAMA_ACCOUNTS			"accounts"
 
@@ -281,5 +282,9 @@ void account_add(gchar *, gchar *);
 void focus_set(FamaFocus);
 FamaFocus focus_get();
 
-
+/* Logfile.c */
+gboolean write_to_log(const gchar *, const gchar *,
+                      const gchar *, const gchar *, const gchar *);
+gboolean get_logging();
+void set_logging(gchar * c);
 #endif
