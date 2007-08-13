@@ -141,6 +141,18 @@ init_all()
 		set_logging(c);
 	}
 
+
+	c = g_key_file_get_string(keyfile_get(), "core", "logging", &err);
+	if (err != NULL) {
+		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
+			g_warning("cannot turn logging on: %s",
+				  err->message);
+
+		g_clear_error(&err);
+	} else {
+             set_logging(c);
+	}
+
 	/*
 	 * Initialize manager factory
 	 */
