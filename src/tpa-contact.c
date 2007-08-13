@@ -26,9 +26,9 @@ contact_add(gchar * uri, gchar * account)
 		return FALSE;
 	}
 
-        tpa_contact_list_add(list, uri);
-        contact = tpa_contact_list_get_contact(list, uri);
-        if (contact == NULL) {
+	tpa_contact_list_add(list, uri);
+	contact = tpa_contact_list_get_contact(list, uri);
+	if (contact == NULL) {
 		g_warning("No such user");
 		return FALSE;
 	}
@@ -67,7 +67,7 @@ contact_remove(gchar * uri, gchar * account)
 		return FALSE;
 	}
 
-        contact = tpa_contact_list_get_contact(list, uri);
+	contact = tpa_contact_list_get_contact(list, uri);
 	if (contact == NULL) {
 		g_warning("No such user");
 		return FALSE;
@@ -91,7 +91,8 @@ contact_authorize(gchar * uri, gchar * account)
 
 	FamaConnection *conn = NULL;
 	GPtrArray *connections = NULL;
-        TpaContact *contact = NULL;
+	TpaContact *contact = NULL;
+
 	connections = connection_get_connections();
 	if (connections == NULL) {
 		g_warning("There are no active connections");
@@ -109,7 +110,7 @@ contact_authorize(gchar * uri, gchar * account)
 		return FALSE;
 	}
 
-        contact = tpa_contact_list_get_contact(list, uri);
+	contact = tpa_contact_list_get_contact(list, uri);
 	if (contact == NULL) {
 		g_warning("No such user");
 		return FALSE;
