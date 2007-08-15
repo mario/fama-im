@@ -109,13 +109,8 @@ channel_created_cb(TpaConnection * conn, TpaChannel * channel)
 		win->channel = channel;
 		win->is_updated = TRUE;
 
-		/*
-		 * uncomment to automatically change current window 
-		 */
-		/*
-		 * window_set_current(win); 
-		 */
-
+		window_set_current(win); 
+		 
 		target_w = g_new(wchar_t, strlen(target) + 1);
 		utf8_to_wchar(target, target_w, strlen(target));
 		window_set_title(win, target_w);
