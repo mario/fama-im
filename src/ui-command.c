@@ -79,11 +79,12 @@ command_func_log(gint argc, gchar ** argv)
 {
 	if (argc > 2)
 		g_warning("usage: /log [on|off]");
-	if (argc == 1)
+	if (argc == 1) {
 		if (get_logging() == TRUE)
 			g_message("logging is on");
 		else
 			g_message("logging is off");
+        }
 	if (argc == 2)
 		set_logging(argv[1]);
 	return 0;
@@ -97,6 +98,7 @@ gboolean
 command_func_window(gint argc, gchar ** argv)
 {
 	FamaWindow *w;
+        gint index;
 
 	if (argc != 2) {
 		g_warning("usage: /window <n>");
@@ -107,11 +109,19 @@ command_func_window(gint argc, gchar ** argv)
 		g_assert((w = window_get_current()) != NULL);
 
 		if (w->type == WindowTypeMain) {
-			g_warning("cannot close the main window!");
-			return FALSE;
+                       g_warning("cannot close the main window!");
+                       return FALSE;
 		}
 
+                index = get_window_index(w);
+
 		window_destroy(w);
+
+                if (window_get_index(index) != NULL){
+                     window_set_current(window_get_index(index));
+                } else {
+                     window_set_current(window_get_index(index-1));
+                }
 		return TRUE;
 	}
 

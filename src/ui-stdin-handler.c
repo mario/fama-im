@@ -80,7 +80,7 @@ handle_input_on_command_line(gunichar c)
 		wchar_t wchar[3];
 		gsize size;
 
-		size = g_unichar_to_utf8(c, mbseq);
+                size = g_unichar_to_utf8(c, mbseq);
 		mbseq[size] = '\0';
 
 		utf8_to_wchar(mbseq, wchar, 2);
@@ -108,11 +108,11 @@ handle_input_on_contact_list(gunichar c)
 		tpa_connection_create_channel(a->parent_group->tpa_connection,
 					      TPA_CHANNEL_TYPE_TEXT,
 					      TPA_CHANNEL_TARGET(a->contact));
-		/*
-		 * Change focus to command-line after initializing a conversation
-		 */
+                /*
+                 * Change focus to command-line after initializing a conversation
+                 */
 
-		focus_set(FocusCommandLine);
+                focus_set(FocusCommandLine);
 	} else if (c == KEY_UP) {
 		contactlist_scroll(-1);
 	} else if (c == KEY_DOWN) {
@@ -124,65 +124,49 @@ gboolean
 stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 {
 	gunichar unichar;
-	gint index = 0, highestindex = 0;
-	gboolean i = TRUE;
-	FamaFocus f;
-	FamaWindow *curwindow, *mainwindow;
+	gint index = 0, highestindex=0;
+        FamaFocus f;
+        FamaWindow * curwindow, *mainwindow;
+        gchar ** argv;
 
 	while (get_wch(&unichar) != ERR) {
 		f = focus_get();
-		switch (unichar) {
-		case 0x06:	//change focus, ctrl+f
+                switch (unichar) {
+                     case 0x06: //change focus, ctrl+f
 			f = (f ==
 			     FocusCommandLine) ? FocusContactList :
 			   FocusCommandLine;
 			focus_set(f);
-			break;
-		case 0x17:	//destroy window, ctrl+w
-			mainwindow = window_get_index(0);
-			curwindow = window_get_current();
-			if (mainwindow == curwindow)
-				g_warning
-					("You cannot destroy the main window, use /quit to close fama.");
-			else {
-				index = get_window_index(curwindow);
-				window_destroy(curwindow);
-				if (window_get_index(index) != NULL)
-					window_set_current(window_get_index
-							   (index));
-				else
-					window_set_current(window_get_index
-							   (index - 1));
-			}
-			break;
-		case 0x0E:	//next window, ctrl+n
-			mainwindow = window_get_index(0);
-			curwindow = window_get_current();
-			index = get_window_index(curwindow);
-			if (window_get_index(index + 1) != NULL)
-				window_set_current(window_get_index(index + 1));
-			else
-				window_set_current(mainwindow);
-			break;
-		case 0x02:	//previous window, ctrl+b
-			mainwindow = window_get_index(0);
-			curwindow = window_get_current();
-			index = get_window_index(curwindow);
-			for (i = TRUE, highestindex = 0; i == TRUE;
-			     highestindex++)
-				if (window_get_index(highestindex) == NULL)
-					i = FALSE;
-			if (window_get_index(index - 1) != NULL)
-				window_set_current(window_get_index(index - 1));
-			else
-				window_set_current(window_get_index
-						   (highestindex - 2));
-			break;
-		}
+                        continue;
+                     case 0x17: //destroy window, ctrl+w
+                          argv[1] = "close";
+                          argv[0] = "window";
+                          command_execute(2, argv);
+                          continue;
+                    case 0x0E: //next window, ctrl+n
+                          mainwindow = window_get_index(0);
+                          curwindow = window_get_current();
+                          index = get_window_index(curwindow);
+                          if (window_get_index(index+1) != NULL)
+                               window_set_current(window_get_index(index+1));
+                          else
+                               window_set_current(mainwindow);
+                          continue;
+                     case 0x02: //previous window, ctrl+b
+                          mainwindow = window_get_index(0);
+                          curwindow = window_get_current();
+                          index = get_window_index(curwindow);
+                          while (window_get_index(highestindex) != NULL)
+                               highestindex++;
+                          if (window_get_index(index-1) != NULL)
+                               window_set_current(window_get_index(index-1));
+                          else
+                               window_set_current(window_get_index(highestindex-1));
+                          continue;
+                }
 
-		/*if (unichar <= 31) {
-			continue;
-		}*/
+                if (unichar < 31 && unichar != 0x0a)
+                     continue;
 
 		switch (f) {
 		case FocusCommandLine:
@@ -192,7 +176,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			handle_input_on_contact_list(unichar);
 			break;
 		}
-	}
+                }
 
 	return TRUE;
 }
