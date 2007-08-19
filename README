@@ -1,0 +1,32 @@
+How to install (the flags are optional):
+
+$ scons PREFIX=/what/ever DEBUG=yes
+$ scons install
+
+
+If you see this error:
+------------------------------------------------------------------
+Generating configuration header src/fama-config.h from 
+src/fama-config.h.in...scons: *** [src/fama-config.h] Exception
+Traceback (most recent call last):
+  File "/usr/lib/scons/SCons/Taskmaster.py", line 171, in execute
+    self.targets[0].build()
+  File "/usr/lib/scons/SCons/Node/__init__.py", line 297, in build
+    apply(executor, (self, exitstatfunc), kw)
+  File "/usr/lib/scons/SCons/Executor.py", line 125, in __call__
+    self.do_execute(target, exitstatfunc, kw)
+  File "/usr/lib/scons/SCons/Executor.py", line 118, in do_execute
+    kw)
+  File "/usr/lib/scons/SCons/Action.py", line 342, in __call__
+    stat = self.execute(target, source, env)
+  File "/usr/lib/scons/SCons/Action.py", line 674, in execute
+    result = self.execfunction(target=target, source=rsources, env=env)
+  File "/home/yourname/fama-interface/build_functions.py", line 28, in 
+BuildConfigHeader
+    config_h.write(config_h_in.read() % env.config_header_vars)
+AttributeError: 'SConsEnvironment' object has no attribute 
+'config_header_vars'
+scons: building terminated because of errors.
+------------------------------------------------------------
+
+It means you have to re-configure, use "scons CONFIGURE=yes"
