@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION='0.0.1'
+VERSION='0.0.2'
 APPNAME='fama'
 
 srcdir = '.'
@@ -13,7 +13,6 @@ def configure(conf):
     conf.check_tool('compiler_cc')
 
     conf.check_pkg('glib-2.0', destvar='GLIB', vnum='2.10.0')
-    conf.check_pkg('libtapioca-client-glib-0.14', destvar='LIBTAPIOCA-CLIENT-GLIB', vnum='0.14.0.2') 
     conf.check_pkg('gobject-2.0', destvar='GOBJECT', vnum='2.10.0')
     conf.check_header('ncurses.h')
     conf.check_header('panel.h')
