@@ -5,6 +5,7 @@ FamaIM 0.0.2 (Tue Aug 13 2007)
      (add/remove/auth)
    * Additional shortcuts (ctrl+w,
      ctrl+n, ctrl+b)
+   * Improved windows handling
    * Switched build system to waf
    * Improved account facility
      (protocols listing)
