@@ -71,8 +71,6 @@ connection_connect(gchar * account, gchar * password)
 	TpaProfile *profile;
 	TpaConnection *conn;
 	TpaManager *manager;
-        gint i;
-        GPtrArray * existingconns;
 
 	/*
 	 * setup the profile for connection 
@@ -114,27 +112,18 @@ connection_connect(gchar * account, gchar * password)
 			 G_CALLBACK(channel_created_cb), NULL);
 
 	/*
-	 * Check if connection exists, otherwise connect! 
+	 * Connect! 
 	 */
+	tpa_connection_connect(conn);
 
-        existingconns = tpa_manager_get_connections(manager);
-        for (i=0;i<existingconns->len;i++)
-             if(g_ptr_array_index(existingconns, i) == conn &&
-                existingconns->len > 0) {
-                  conn = g_ptr_array_index(existingconns, i);
-             } else {
+	if (connections == NULL)
+		connections = g_ptr_array_new();
 
-                  tpa_connection_connect(conn);
+	connection = g_new(FamaConnection, 1);
+	connection->connection = conn;
+	connection->account = g_strdup_printf("%s", account);
 
-                  if (connections == NULL)
-                       connections = g_ptr_array_new();
-
-                  connection = g_new(FamaConnection, 1);
-                  connection->connection = conn;
-                  connection->account = g_strdup_printf("%s", account);
-
-                  g_ptr_array_add(connections, connection);
-             }
+	g_ptr_array_add(connections, connection);
 
 	return conn;
 }
