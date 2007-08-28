@@ -112,7 +112,7 @@ connection_connect(gchar * account, gchar * password)
 	 */
 
 	if (!account_get_profile(account, &profile)) {
-		g_warning("failed to get account profile!");
+		g_warning("Failed to get account profile!");
 		return NULL;
 	}
 
@@ -124,7 +124,7 @@ connection_connect(gchar * account, gchar * password)
 						tpa_profile_get_protocol
 						(profile));
 	if (!manager) {
-		g_warning("failed to create Connection Manager!");
+		g_warning("Failed to create Connection Manager!");
 		return NULL;
 	}
 
@@ -134,15 +134,15 @@ connection_connect(gchar * account, gchar * password)
          */
         conn = tpa_manager_request_connection(manager, profile);
 
-        g_print ("Requesting a new connection...");
+        g_message("Requesting a new connection...");
 
         if (!conn) {
-            g_warning("failed to create Connection!");
+            g_warning("Failed to create connection!");
             return NULL;
         }
     }
     else {
-        g_print("Reusing a connection...");
+        g_message("Reusing a connection...");
 
     }
 
