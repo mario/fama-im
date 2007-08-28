@@ -66,7 +66,7 @@ connection_disconnect_all()
 TpaConnection *
 connection_connect(gchar * account, gchar * password)
 {
-	FamaConnection *connection;
+        FamaConnection *connection, *tempconn = NULL;
 	TpaParameter *parameter;
 	TpaProfile *profile;
 	TpaConnection *conn;
@@ -112,20 +112,26 @@ connection_connect(gchar * account, gchar * password)
 			 G_CALLBACK(channel_created_cb), NULL);
 
 	/*
-	 * Connect! 
+	 * Check if connection exists, otherwise connect! 
 	 */
-	tpa_connection_connect(conn);
+        if ( connection_get_connections() != NULL)
+             tempconn->connection = connection_get_connection_from_account(account);
+        if(tempconn !=NULL &&
+           tpa_connection_get_protocol(conn) == tpa_connection_get_protocol(tempconn->connection)) {
+             conn = tempconn->connection;
+        } else {
+             tpa_connection_connect(conn);
+             if (connections == NULL)
+                  connections = g_ptr_array_new();
 
-	if (connections == NULL)
-		connections = g_ptr_array_new();
+             connection = g_new(FamaConnection, 1);
+             connection->connection = conn;
+             connection->account = g_strdup_printf("%s", account);
 
-	connection = g_new(FamaConnection, 1);
-	connection->connection = conn;
-	connection->account = g_strdup_printf("%s", account);
+             g_ptr_array_add(connections, connection);
+        }
 
-	g_ptr_array_add(connections, connection);
-
-	return conn;
+        return conn;
 }
 
 void

@@ -137,12 +137,12 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			     FocusCommandLine) ? FocusContactList :
 			   FocusCommandLine;
 			focus_set(f);
-                        continue;
+                        break;
                      case 0x17: //destroy window, ctrl+w
                           argv[1] = "close";
                           argv[0] = "window";
                           command_execute(2, argv);
-                          continue;
+                          break;
                     case 0x0E: //next window, ctrl+n
                           mainwindow = window_get_index(0);
                           curwindow = window_get_current();
@@ -151,7 +151,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
                                window_set_current(window_get_index(index+1));
                           else
                                window_set_current(mainwindow);
-                          continue;
+                          break;
                      case 0x02: //previous window, ctrl+b
                           mainwindow = window_get_index(0);
                           curwindow = window_get_current();
@@ -162,7 +162,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
                                window_set_current(window_get_index(index-1));
                           else
                                window_set_current(window_get_index(highestindex-1));
-                          continue;
+                          break;
                 }
 
                 if (unichar < 31 && unichar != 0x0a)
