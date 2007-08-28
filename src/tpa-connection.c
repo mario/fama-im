@@ -64,6 +64,41 @@ connection_disconnect_all()
 }
 
 TpaConnection *
+connection_recovery (gchar *account, TpaManager *manager)
+{
+    TpaConnection *conn = NULL;
+    TpaConnection *connection = NULL;
+    GPtrArray *connections = NULL;
+    int i;
+
+    g_assert(account);
+    g_assert(manager);
+
+    connections = tpa_manager_get_connections(manager);
+
+    if ((connections) && (connections->len > 0)) {
+        for (i = 0; i < connections->len; ++i) {
+            connection = g_ptr_array_index (connections, i);
+
+            if ((connection) &&
+                (tpa_connection_get_status (connection) == TPA_CONNECTION_STATUS_CONNECTED)) {
+                TpaUserContact *user = tpa_connection_get_user_contact (connection);
+                gchar *uri = tpa_channel_target_get_uri (TPA_CHANNEL_TARGET (user));
+
+                if (uri) {
+                    if (g_str_equal (account, uri)) {
+                        conn = connection;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return conn;
+}
+
+TpaConnection *
 connection_connect(gchar * account, gchar * password)
 {
 	FamaConnection *connection;
@@ -93,15 +128,23 @@ connection_connect(gchar * account, gchar * password)
 		return NULL;
 	}
 
-	/*
-	 * Get a Connection 
-	 */
-	conn = tpa_manager_request_connection(manager, profile);
+    if (!(conn = connection_recovery (account, manager))) {
+        /*
+         * Get a Connection 
+         */
+        conn = tpa_manager_request_connection(manager, profile);
 
-	if (!conn) {
-		g_warning("failed to create Connection!");
-		return NULL;
-	}
+        g_print ("Requesting a new connection...");
+
+        if (!conn) {
+            g_warning("failed to create Connection!");
+            return NULL;
+        }
+    }
+    else {
+        g_print("Reusing a connection...");
+
+    }
 
 	/*
 	 * Set up connection callbacks 
@@ -114,7 +157,8 @@ connection_connect(gchar * account, gchar * password)
 	/*
 	 * Connect! 
 	 */
-	tpa_connection_connect(conn);
+    if (tpa_connection_get_status (conn) == TPA_CONNECTION_STATUS_DISCONNECTED)
+        tpa_connection_connect(conn);
 
 	if (connections == NULL)
 		connections = g_ptr_array_new();
@@ -124,6 +168,15 @@ connection_connect(gchar * account, gchar * password)
 	connection->account = g_strdup_printf("%s", account);
 
 	g_ptr_array_add(connections, connection);
+
+        if (tpa_connection_get_status (conn) == TPA_CONNECTION_STATUS_CONNECTED) {
+            contactlist_reload_from_server(conn);
+            contactlist_sort();
+            contactlist_draw();
+
+//            user = tpa_connection_get_user_contact(conn);
+//                   tpa_user_contact_set_capabilities(user, TPA_CAPABILITY_TEXT);
+        }
 
 	return conn;
 }
