@@ -21,7 +21,7 @@ def configure(conf):
     conf.env['LIB_NCURSESW'] = "ncursesw"
     conf.env['LIBPATH_NCURSESW'] = '/usr/include'
 
-    conf.env['LIB_PANEL'] = "panel"
+    conf.env['LIB_PANEL'] = "panelw"
     conf.env['LIBPATH_PANEL'] = '/usr/include'
 
     conf.add_define('VERSION', VERSION)
