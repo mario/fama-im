@@ -1,4 +1,4 @@
-FamaIM 0.0.2 (Tue Aug 13 2007)
+FamaIM 0.0.2 (Wed Aug 29 2007)
    
    * Basic logging facility
    * Basic contacts list facility
@@ -9,6 +9,7 @@ FamaIM 0.0.2 (Tue Aug 13 2007)
    * Switched build system to waf
    * Improved account facility
      (protocols listing)
+   * Implemented connection reusing
 
 FamaIM 0.0.1 (Sat Jul 07 2007)
 
