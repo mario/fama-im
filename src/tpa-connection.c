@@ -76,24 +76,20 @@ connection_recovery (gchar *account, TpaManager *manager)
 
     connections = tpa_manager_get_connections(manager);
 
-    if ((connections) && (connections->len > 0)) {
+    if ((connections) && (connections->len > 0))
         for (i = 0; i < connections->len; ++i) {
             connection = g_ptr_array_index (connections, i);
-
             if ((connection) &&
                 (tpa_connection_get_status (connection) == TPA_CONNECTION_STATUS_CONNECTED)) {
                 TpaUserContact *user = tpa_connection_get_user_contact (connection);
-                gchar *uri = tpa_channel_target_get_uri (TPA_CHANNEL_TARGET (user));
-
-                if (uri) {
+                const gchar *uri = tpa_channel_target_get_uri (TPA_CHANNEL_TARGET (user));
+                if (uri)
                     if (g_str_equal (account, uri)) {
                         conn = connection;
                         break;
                     }
-                }
             }
         }
-    }
 
     return conn;
 }
@@ -106,6 +102,7 @@ connection_connect(gchar * account, gchar * password)
 	TpaProfile *profile;
 	TpaConnection *conn;
 	TpaManager *manager;
+    TpaConnectionStatus status;
 
 	/*
 	 * setup the profile for connection 
@@ -134,16 +131,10 @@ connection_connect(gchar * account, gchar * password)
          */
         conn = tpa_manager_request_connection(manager, profile);
 
-        g_message("Requesting a new connection...");
-
         if (!conn) {
             g_warning("Failed to create connection!");
             return NULL;
         }
-    }
-    else {
-        g_message("Reusing a connection...");
-
     }
 
 	/*
@@ -154,12 +145,6 @@ connection_connect(gchar * account, gchar * password)
 	g_signal_connect(G_OBJECT(conn), "channel-created",
 			 G_CALLBACK(channel_created_cb), NULL);
 
-	/*
-	 * Connect! 
-	 */
-    if (tpa_connection_get_status (conn) == TPA_CONNECTION_STATUS_DISCONNECTED)
-        tpa_connection_connect(conn);
-
 	if (connections == NULL)
 		connections = g_ptr_array_new();
 
@@ -169,14 +154,15 @@ connection_connect(gchar * account, gchar * password)
 
 	g_ptr_array_add(connections, connection);
 
-        if (tpa_connection_get_status (conn) == TPA_CONNECTION_STATUS_CONNECTED) {
-            contactlist_reload_from_server(conn);
-            contactlist_sort();
-            contactlist_draw();
-
-//            user = tpa_connection_get_user_contact(conn);
-//                   tpa_user_contact_set_capabilities(user, TPA_CAPABILITY_TEXT);
-        }
+	/*
+	 * Connect! 
+	 */
+    status = tpa_connection_get_status (conn);
+    if (status == TPA_CONNECTION_STATUS_DISCONNECTED)
+        tpa_connection_connect(conn);
+    else if (status == TPA_CONNECTION_STATUS_CONNECTED)
+        status_changed_cb (conn, TPA_CONNECTION_STATUS_CONNECTED,
+                           TPA_CONNECTION_STATUS_REASON_NONE_SPECIFIED);
 
 	return conn;
 }
