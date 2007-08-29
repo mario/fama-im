@@ -4,4 +4,8 @@ $ ./configure --prefix=/usr
 $ make
 # make install
 
+Homepage: http://fama-im.org
+Irc channel: irc.freenode.net #fama
+
+Contributions are welcome!
 This file will have something more useful in the future :)
