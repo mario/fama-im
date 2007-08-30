@@ -109,7 +109,7 @@ command_func_window(gint argc, gchar ** argv)
 		g_assert((w = window_get_current()) != NULL);
 
 		if (w->type == WindowTypeMain) {
-                       g_warning("cannot close the main window!");
+                       g_warning("Cannot close the main window!");
                        return FALSE;
 		}
 
