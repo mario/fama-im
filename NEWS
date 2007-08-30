@@ -8,7 +8,7 @@ FamaIM 0.0.3 (Day Month Date 2007)
    * Fixed a bug in build system which
      prevented build with only ncursesw
      installed
-   * Improved log command for users
+   * Improved log command look&feel
    * Added status component to log
      command 
 
