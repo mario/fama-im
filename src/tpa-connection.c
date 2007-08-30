@@ -233,15 +233,15 @@ status_changed_cb(TpaConnection * conn, TpaConnectionStatus status,
 			contactlist_remove_group(group);
 
 		contactlist_draw();
-		tpa_connection_disconnect(conn);
 
 		for (i = 0; i < connections->len; i++) {
 			connection = g_ptr_array_index(connections, i);
 
 			if (connection->connection == conn) {
-				g_free(connection->account);
-				g_free(connection);
 				g_ptr_array_remove(connections, connection);
+				g_free(connection->account);
+				g_object_unref(connection->connection);
+				g_free(connection);
 				break;
 			}
 		}
