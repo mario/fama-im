@@ -43,12 +43,22 @@ write_to_log(const gchar * account, const gchar * contact, const gchar * author,
 void
 set_logging(gchar * c)
 {
-	if (g_ascii_strcasecmp(c, "on") == 0)
+	if (g_ascii_strcasecmp(c, "on") == 0){
 		logging = TRUE;
-	else if (g_ascii_strcasecmp(c, "off") == 0)
+		g_message("Logging is on!");
+	}
+	else if (g_ascii_strcasecmp(c, "off") == 0){
 		logging = FALSE;
+		g_message("Logging is off!");
+	}	
+	else if (g_ascii_strcasecmp(c,"status") == 0){
+		if (logging == TRUE)
+			g_message("Logging is on!");
+		else
+			g_message("Logging is off!");
+		}
 	else
-		logging = FALSE;
+		g_warning("usage: /log [on|off|status]");
 }
 
 gboolean

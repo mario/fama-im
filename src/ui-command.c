@@ -77,14 +77,9 @@ command_func_quit(gint argc, gchar ** argv)
 gboolean
 command_func_log(gint argc, gchar ** argv)
 {
-	if (argc > 2)
-		g_warning("usage: /log [on|off]");
-	if (argc == 1) {
-		if (get_logging() == TRUE)
-			g_message("logging is on");
-		else
-			g_message("logging is off");
-        }
+	if (argc != 2)
+		g_warning("usage: /log [on|off|status]");
+
 	if (argc == 2)
 		set_logging(argv[1]);
 	return 0;
