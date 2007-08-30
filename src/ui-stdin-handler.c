@@ -127,7 +127,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 	gint index = 0, highestindex=0;
         FamaFocus f;
         FamaWindow * curwindow, *mainwindow;
-        gchar ** argv;
+        gchar *winclose[] = {"window", "close", NULL};
 
 	while (get_wch(&unichar) != ERR) {
 		f = focus_get();
@@ -139,9 +139,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			focus_set(f);
                         break;
                      case 0x17: //destroy window, ctrl+w
-                          argv[1] = "close";
-                          argv[0] = "window";
-                          command_execute(2, argv);
+                          command_execute(2, winclose);
                           break;
                     case 0x0E: //next window, ctrl+n
                           mainwindow = window_get_index(0);
