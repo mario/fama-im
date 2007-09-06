@@ -4,6 +4,11 @@ $ ./configure --prefix=/usr
 $ make
 # make install
 
+If you have problems with dependencies resolution,
+and you are sure they are there, try the following:
+
+rm -rf ~/.wafcache
+
 Homepage: http://fama-im.org
 Irc channel: irc.freenode.net #fama
 
