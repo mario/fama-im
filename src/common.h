@@ -7,8 +7,8 @@
 #include <glib-object.h>
 
 #include <wchar.h>
-#include <ncursesw/ncurses.h>
-#include <ncursesw/panel.h>
+#include <ncurses.h>
+#include <panel.h>
 
 #include <tapioca/tpa-client.h>
 

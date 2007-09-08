@@ -32,6 +32,7 @@ def configure(conf):
     conf.env.append_value('CCFLAGS', '-DHAVE_CONFIG_H')
 
     conf.write_config_header('config.h')
+    conf.env.append_value('CCFLAGS', '-I/usr/include/ncursesw')
 
 def build(bld):
     bld.add_subdirs('src')
