@@ -27,6 +27,8 @@
 	- When CL is sorted via status, contacts with the same status 
           should be sorted by name.
 
+[Task] Implement "/account remove" for removing accounts
+
 [Bug] Shortcuts are implemented in a bad way [Delete, Backspace, and 
 such don't work for some]
 
