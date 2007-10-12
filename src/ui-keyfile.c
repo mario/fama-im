@@ -22,8 +22,10 @@ const gchar *default_keyfile = "[core]\n"
 	"status_available=green\n"
 	"status_away=cyan\n"
 	"status_busy=magenta\n"
-	"status_idle=yellow\n" "status_offline=default\n" "status_other=red\n";
-
+	"status_idle=yellow\n" "status_offline=default\n" "status_other=red\n"
+	"\n[history]\n"
+	"history_filename=history\n"
+	"history_maxnumber=1024\n";
 
 GKeyFile *keyFile = NULL;
 
@@ -80,6 +82,7 @@ keyfile_write()
 	path = g_strdup_printf("%s/%s", g_get_home_dir(), FAMA_CONFIG_DIR);
 	if (g_mkdir_with_parents(path, 0700) != 0) {
 		g_warning("Cannot create directories for '%s'", path);
+		g_free(path);
 		return FALSE;
 	}
 	g_free(path);
@@ -88,6 +91,7 @@ keyfile_write()
 	data = g_key_file_to_data(keyFile, &length, &err);
 	if (data == NULL) {
 		g_warning("Cannot get keyfile data: %s", err->message);
+		g_free(path);
 		return FALSE;
 	}
 

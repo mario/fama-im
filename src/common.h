@@ -200,6 +200,7 @@ wchar_t *commandline_get_buffer();
 void commandline_draw();
 void commandline_move_cursor(gint);
 void commandline_delete();
+void commandline_set_cmd(gchar *line);
 
 /* Keyfile.c */
 gboolean keyfile_read();
@@ -210,6 +211,7 @@ GKeyFile *keyfile_get();
 #define FAMA_LOGFILE_DIR                "logs"
 #define FAMA_CONFIG_FILE                "config"
 #define FAMA_ACCOUNTS			"accounts"
+#define FAMA_HISTORY_FILE		"history"
 
 /* Window.c */
 FamaWindow *window_new(FamaWindowType);
@@ -236,6 +238,13 @@ void log_get_time(gchar *, gsize);
 void command_init();
 void command_add(gchar *, CommandFunc);
 gboolean command_execute(gint, gchar **);
+gboolean command_hist_init();
+gboolean commandline_hist_loadpre();
+gboolean commandline_hist_loadnext();
+
+/* history*/
+/** default list number of history*/
+#define DEFAULTLISTNUMBER	10
 
 /* Color.c */
 void color_init();

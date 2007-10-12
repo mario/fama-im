@@ -77,6 +77,7 @@ command_func_account(gint argc, gchar ** argv)
 		window_add_message(window_get_current(), title, A_BOLD, outbuf);
 
 		g_ptr_array_free(items, TRUE);
+		g_free(outbuf);
 	}
 	return TRUE;
 }

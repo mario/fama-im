@@ -1,4 +1,5 @@
 #include "common.h"
+#include "ui-history.h"
 
 void
 handle_input_on_command_line(gunichar c)
@@ -46,6 +47,11 @@ handle_input_on_command_line(gunichar c)
 				g_clear_error(&err);
 			} else {
 				/*
+ 				 * add to history session
+ 				 */
+				famahistory_command_add(argc, argv);
+
+				/*
 				 * Execute command!!
 				 */
 				if (command_execute(argc, argv) == FALSE)
@@ -71,7 +77,13 @@ handle_input_on_command_line(gunichar c)
 		commandline_move_cursor(-1);
 	} else if (c == KEY_RIGHT) {
 		commandline_move_cursor(1);
-	} else if (c == '\t' || c == KEY_UP || c == KEY_DOWN) {
+	} else if (c == KEY_UP) {
+		famahistory_command_loadpre();
+		commandline_draw();
+	} else if (c == KEY_DOWN) {
+		famahistory_command_loadnext();
+		commandline_draw();
+	} else if (c == '\t') {
 		/*
 		 * Ignore for the time being 
 		 */

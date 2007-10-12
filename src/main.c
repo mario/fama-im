@@ -6,6 +6,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include "ui-history.h"
 
 GMainLoop *loop;
 
@@ -180,6 +181,12 @@ init_all()
 	command_init();
 
 	/*
+	 * Initialize history interface
+	 */ 
+	
+	famahistory_command_init();
+
+	/*
 	 * Call stdin_handle_input when there's input from stdin
 	 */
 
@@ -199,3 +206,4 @@ init_all()
 
 	return TRUE;
 }
+
