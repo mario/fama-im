@@ -260,18 +260,20 @@ gboolean
 famahistory_command_loadpre()
 {
 	HIST_ENTRY *he;
-	gint offset, totalcnt;	
+	gint offset, totalcnt;
 	totalcnt = famahistory_number();
 	offset = famahis.currentpos;// where_history();
 	offset--;
-	if (offset == history_base - 1)
-		offset = totalcnt + history_base;
+
 	he = famahistory_get(offset);
-	if (he)
+	if (he) {
 		commandline_set_cmd(he->line);
-	else
+        famahis.currentpos = offset;
+    }
+	else {
 		commandline_set_cmd(NULL);
-	famahis.currentpos = offset;
+        famahis.currentpos = history_base - 1;
+    }
 	return TRUE;
 }
 
@@ -279,18 +281,20 @@ gboolean
 famahistory_command_loadnext()
 {
 	HIST_ENTRY *he;
-	gint offset, totalcnt;	
+	gint offset, totalcnt;
 	totalcnt = famahistory_number();
 	offset = famahis.currentpos;// where_history();
 	offset++;
-	if (offset == history_base + totalcnt + 1)
-		offset = history_base;
+
 	he = famahistory_get(offset);
-	if (he)
+	if (he) {
 		commandline_set_cmd(he->line);
-	else
+        famahis.currentpos = offset;
+    }
+	else {
 		commandline_set_cmd(NULL);
-	famahis.currentpos = offset;
+        famahis.currentpos = totalcnt;
+    }
 	return TRUE;
 }
 
