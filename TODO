@@ -29,6 +29,8 @@
 
 [Task] Implement "/account remove" for removing accounts
 
+[Task] Implement scrolling through conversation with PgUp/PgDn
+
 [Bug] Shortcuts are implemented in a bad way [Delete, Backspace, and 
 such don't work for some]
 
