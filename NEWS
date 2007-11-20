@@ -1,0 +1,31 @@
+FamaIM 0.0.3 (Day Month Date 2007)
+
+   * Improved connection reusing
+   * Fixed disconnect problems
+     which sometimes caused segfault
+   * Fixed double ctrl+w bug which
+     caused segfault
+   * Fixed a bug in build system which
+     prevented build with only ncursesw
+     installed
+   * Improved log command look&feel
+   * Added status component to log
+     command 
+
+
+FamaIM 0.0.2 (Wed Aug 29 2007)
+   
+   * Basic logging facility
+   * Basic contacts list facility
+     (add/remove/auth)
+   * Additional shortcuts (ctrl+w,
+     ctrl+n, ctrl+b)
+   * Improved windows handling
+   * Switched build system to waf
+   * Improved account facility
+     (protocols listing)
+   * Implemented connection reusing
+
+FamaIM 0.0.1 (Sat Jul 07 2007)
+
+    * Initial release 

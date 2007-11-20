@@ -1,0 +1,35 @@
+[Task] Replace tapioca with libempathy
+[Task[ Implement connect differently
+	- /connect user_id
+	- command line ">" disappears, and "Password:" prompt appears
+	- user enters password, password is hidden
+	- user clicks enter, and then wwe handle connection
+[Task] Implement commands history (cycled with down arrow)
+	- ~/.fama/history
+	- history saving - option in ~/.fama/config
+	- number of commands saved - option in ~/.fama/config
+	- Should be configurable through Fama UI
+[Task] Implement aliases
+	- Current implementation has problems in way that 
+          you cant have two accounts with same id's, even
+	  if they are different protocols
+	- Implement aliases in the following way:
+		- add alias as optional parametar to /account add
+		- if user adds an account with non-existing UI without 
+		  alias, allow him to do so
+		- if user tries to add an account without alias, and 
+		  that id is already used, inform him that he has
+                  to use an alias
+		- provide a facility to manipulate aliases from fama UI
+		- ~/.fama/aliases
+
+[Task] Contact list name sorting
+	- When CL is sorted via status, contacts with the same status 
+          should be sorted by name.
+
+[Task] Implement "/account remove" for removing accounts
+
+[Bug] Shortcuts are implemented in a bad way [Delete, Backspace, and 
+such don't work for some]
+
+
