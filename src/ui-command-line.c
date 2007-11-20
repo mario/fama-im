@@ -1,4 +1,5 @@
 #include "common.h"
+#include <string.h>
 
 #define COMMAND_LINE_MAX_LENGHT 512
 
@@ -114,3 +115,21 @@ commandline_add_wch(wchar_t c)
 
 	commandline_draw();
 }
+
+void
+commandline_set_cmd(gchar *line)
+{
+	gint strlength;
+	if (!line) {
+		cmdbuf[0] = L'\0';
+		len = ptr = 0;
+		return;
+	}
+	cmdbuf[0] = L'/';	
+	strlength = strlen(line);
+	utf8_to_wchar(line, cmdbuf + 1, strlength);
+	cmdbuf[strlength + 1] = L'\0';
+	len = strlength;
+	ptr = len;
+}
+

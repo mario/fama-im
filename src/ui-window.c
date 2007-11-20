@@ -1,6 +1,8 @@
 #include "common.h"
-
-#define WINDOW_WIDTH (get_max_x() - contactlist_get_width())
+#include <string.h>
+#include "ui-window.h"
+#include "empathy-contactliststore.h"
+#define WINDOW_WIDTH (get_max_x() - empathy_contactlistwin_get_width())
 
 GPtrArray *window_list = NULL;
 FamaWindow *current_window = NULL;
@@ -40,7 +42,7 @@ window_create_status_string()
  */
 
 FamaWindow *
-window_find_channel(TpaChannel * channel)
+window_find_empathychat(EmpathyChat *chat)
 {
 	FamaWindow *win = NULL;
 	gint i;
@@ -51,12 +53,15 @@ window_find_channel(TpaChannel * channel)
 	for (i = 0; i < window_list->len; i++) {
 		win = g_ptr_array_index(window_list, i);
 
-		if (win->channel == channel)
+		if (win->empathychat == chat)
 			break;
 
 		win = NULL;
 	}
 
+	if (!win) {
+		win = empathy_chat_appendwindow(chat);
+	}
 	return win;
 }
 
@@ -76,6 +81,43 @@ window_draw_title_bar()
 }
 
 void
+window_draw_all_titlebars()
+{
+	gint i, strlength, pos = 0, n = 0xff, attr;
+	ColorSettings *c = color_get();
+	FamaWindow *win;
+	EmpathyChat *chat;
+
+	if (window_list == NULL)
+		return;
+	/**FIXME: refresh screen doesn't work*/
+	//wredrawln(stdscr, 0, 10);
+	for (i = 0; i < window_list->len; i++) {
+		win = g_ptr_array_index(window_list, i);
+
+		if (win == current_window) {
+			attr = c->status_active_window | A_BOLD;
+		} else {
+			if (win->is_updated)
+				attr = c->window_title_uploaded | A_BOLD;
+			else
+				attr = c->window_title;
+		}
+
+		attron(A_UNDERLINE | attr);
+		/** FIXME: window's bounder is not checked*/
+		if (win->title != NULL) {
+			strlength = wcswidth(win->title, n);
+			mvwaddwstr_with_maxwidth(stdscr, 1, pos, win->title,
+					 WINDOW_WIDTH - 2);
+			pos += strlength + 4;
+		}
+
+		attrset(A_NORMAL);
+	}
+}
+
+void
 window_set_title(FamaWindow * w, wchar_t * title)
 {
 	if (w->title != NULL)
@@ -89,12 +131,14 @@ void
 window_set_current(FamaWindow * w)
 {
 	current_window = w;
+	g_assert(w);
 
 	if (w != NULL) {
 		w->is_updated = FALSE;
 
 		top_panel(w->ncpanel);
-		window_draw_title_bar();
+		//window_draw_title_bar();
+		window_draw_all_titlebars();
 		statusbar_draw();
 	}
 
@@ -138,7 +182,7 @@ window_new(FamaWindowType type)
 	w->messages = g_ptr_array_new();
 	w->type = type;
 	w->title = NULL;
-	w->channel = NULL;
+	w->empathychat = NULL;
 	w->is_updated = TRUE;
 
 	g_ptr_array_add(window_list, w);
@@ -190,6 +234,8 @@ window_add_message(FamaWindow * w, wchar_t * title, gint attr, wchar_t * str)
 		w->is_updated = FALSE;
 	} else {
 		w->is_updated = TRUE;
+		/** refresh the window titles display*/
+		window_draw_all_titlebars();
 		statusbar_draw();
 	}
 
@@ -223,12 +269,24 @@ window_destroy(FamaWindow * w)
 	del_panel(w->ncpanel);
 	delwin(w->ncwin);
 
-	tpa_channel_close(w->channel);
+	g_object_unref(w->empathychat);
 	g_ptr_array_remove(window_list, w);
 	g_free(w->title);
 	g_free(w);
 
-	window_set_current(g_ptr_array_index(window_list, 0));
+	if (window_list->len)
+		window_set_current(g_ptr_array_index(window_list, 0));
+}
+
+void
+window_destroy_all_windows()
+{
+	int i = 0;
+	FamaWindow *win;
+	for (i = 0; i < window_list->len; i++) {
+		win = g_ptr_array_index(window_list, 0);
+		window_destroy(win);
+	}
 }
 
 void
@@ -285,4 +343,28 @@ get_window_index(FamaWindow * window)
 		if (g_ptr_array_index(window_list, i) == window)
 			return i;
 	return 0;
+}
+
+EmpathyChat *
+empathy_chat_window_find_chat (McAccount   *account, const gchar *id)
+{
+	gint i;
+	EmpathyChat *chat;
+	FamaWindow *win = NULL;
+
+	g_return_val_if_fail (MC_IS_ACCOUNT (account), NULL);
+	g_return_val_if_fail (!G_STR_EMPTY (id), NULL);
+
+	for (i = 0; i < window_list->len; i++) {
+		win = g_ptr_array_index(window_list, i);
+		chat = win->empathychat;
+		if (!chat)
+			continue;
+
+		if (empathy_account_equal (account, chat->account) &&
+			strcmp (id, empathy_chat_get_id (chat)) == 0) {
+			return chat;
+		}
+	}
+	return NULL;
 }

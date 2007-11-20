@@ -74,20 +74,28 @@ color_init()
 	settings.borders = color_with_fallback("borders", COLOR_PAIR(6));
 	settings.command_line = color_with_fallback("command_line", 0);
 	settings.window_title =
-		color_with_fallback("window_title", COLOR_PAIR(3));
+		color_with_fallback("window_title", COLOR_PAIR(6));
+	settings.window_title_uploaded =
+		color_with_fallback("window_title_uploaded", COLOR_PAIR(5));
+	settings.status_active_window = 
+		color_with_fallback("status_active_window", COLOR_PAIR(6));
 	settings.outgoing_message =
 		color_with_fallback("outgoing_message", COLOR_PAIR(2));
 	settings.incoming_message =
 		color_with_fallback("incoming_message", COLOR_PAIR(6));
+	settings.incoming_message =
+		color_with_fallback("incoming_automsg", COLOR_PAIR(4));
 	settings.status_available =
-		color_with_fallback("status_available", COLOR_PAIR(2));
+		color_with_fallback("status_available", COLOR_PAIR(1));
 	settings.status_away =
 		color_with_fallback("status_away", COLOR_PAIR(6));
 	settings.status_idle =
 		color_with_fallback("status_idle", COLOR_PAIR(3));
 	settings.status_busy =
 		color_with_fallback("status_busy", COLOR_PAIR(5));
-	settings.status_offline = color_with_fallback("status_offline", 0);
+	settings.status_group =
+		color_with_fallback("status_group", COLOR_PAIR(6));
+	settings.status_offline = color_with_fallback("status_offline", COLOR_PAIR(8));
 	settings.status_other =
 		color_with_fallback("status_available", COLOR_PAIR(1));
 }

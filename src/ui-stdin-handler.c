@@ -1,4 +1,8 @@
 #include "common.h"
+#include "ui-window.h"
+#include "ui-history.h"
+#include "empathy-contactliststore.h"
+#include "empathy-chat.h"
 
 void
 handle_input_on_command_line(gunichar c)
@@ -18,17 +22,12 @@ handle_input_on_command_line(gunichar c)
 
 			if (cmdbuf[0] != L'\0') {
 				win = window_get_current();
-
-				if (win->channel != NULL) {
+				
+				if (win->empathychat != NULL) {
 					gchar *contents;
-
 					contents =
-						utf8_from_wchar(cmdbuf, NULL,
-								0);
-					channel_send_message(TPA_TEXT_CHANNEL
-							     (win->channel),
-							     contents);
-					g_free(contents);
+						utf8_from_wchar(cmdbuf, NULL, 0);
+					empathy_chat_send(win->empathychat, contents);
 				}
 			}
 		} else {
@@ -45,6 +44,11 @@ handle_input_on_command_line(gunichar c)
 					  err->message);
 				g_clear_error(&err);
 			} else {
+				/*
+ 				 * add to history session
+ 				 */
+				famahistory_command_add(argc, argv);
+
 				/*
 				 * Execute command!!
 				 */
@@ -71,7 +75,13 @@ handle_input_on_command_line(gunichar c)
 		commandline_move_cursor(-1);
 	} else if (c == KEY_RIGHT) {
 		commandline_move_cursor(1);
-	} else if (c == '\t' || c == KEY_UP || c == KEY_DOWN) {
+	} else if (c == KEY_UP) {
+		famahistory_command_loadpre();
+		commandline_draw();
+	} else if (c == KEY_DOWN) {
+		famahistory_command_loadnext();
+		commandline_draw();
+	} else if (c == '\t') {
 		/*
 		 * Ignore for the time being 
 		 */
@@ -97,26 +107,27 @@ handle_input_on_contact_list(gunichar c)
 {
 	if (c == 0x0a || c == KEY_ENTER) {
 
-		FamaContactListItem *a;
-
+		//FamaContactListItem *a;
+		EmpathyContact *contact;
 		/*
 		 * Start conversation with selected contact
 		 */
-		if ((a = contactlist_get_selected()) == NULL)
+		if ((contact = empathy_contact_list_store_get_selected(list_store)) == NULL)
 			return;
-
-		tpa_connection_create_channel(a->parent_group->tpa_connection,
-					      TPA_CHANNEL_TYPE_TEXT,
-					      TPA_CHANNEL_TARGET(a->contact));
+		
+		empathy_contact_list_launch_channel(contact);
+		g_object_unref(contact);
                 /*
                  * Change focus to command-line after initializing a conversation
                  */
 
                 focus_set(FocusCommandLine);
 	} else if (c == KEY_UP) {
-		contactlist_scroll(-1);
+		empathy_contactlistwin_scroll(list_store, -1);
+		statusbar_draw();
 	} else if (c == KEY_DOWN) {
-		contactlist_scroll(1);
+		empathy_contactlistwin_scroll(list_store, 1);
+		statusbar_draw();
 	}
 }
 
@@ -133,10 +144,10 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 		f = focus_get();
                 switch (unichar) {
                      case 0x06: //change focus, ctrl+f
-			f = (f ==
+			  f = (f ==
 			     FocusCommandLine) ? FocusContactList :
-			   FocusCommandLine;
-			focus_set(f);
+			  FocusCommandLine;
+			  focus_set(f);
                         break;
                      case 0x17: //destroy window, ctrl+w
                           command_execute(2, winclose);
@@ -162,7 +173,8 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
                                window_set_current(window_get_index(highestindex-1));
                           break;
                 }
-
+		statusbar_draw();
+		
                 if (unichar < 31 && unichar != 0x0a)
                      continue;
 
@@ -174,7 +186,7 @@ stdin_handle_input(GIOChannel * source, GIOCondition cond, gpointer d)
 			handle_input_on_contact_list(unichar);
 			break;
 		}
-                }
+        }
 
 	return TRUE;
 }

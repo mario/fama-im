@@ -24,7 +24,7 @@ _string_to_presence(gchar * string)
 gboolean
 command_func_status(gint argc, gchar ** argv)
 {
-	TpaContactPresence presence;
+/*r	TpaContactPresence presence;
 	TpaUserContact *user;
 	GPtrArray *connections;
 	FamaConnection *conn;
@@ -79,6 +79,6 @@ command_func_status(gint argc, gchar ** argv)
 		}
 
 	}
-
+*/
 	return TRUE;
 }

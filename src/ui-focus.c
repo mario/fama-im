@@ -1,4 +1,5 @@
 #include "common.h"
+#include "empathy-contactliststore.h"
 
 FamaFocus current_focus = FocusCommandLine;
 
@@ -15,7 +16,7 @@ focus_set(FamaFocus f)
 		mvaddch(get_max_y() - 1, 0, ' ');
 		break;
 	case FocusContactList:
-		contactlist_draw();
+		empathy_contactlistwin_draw(list_store);
 		break;
 	}
 
@@ -24,7 +25,7 @@ focus_set(FamaFocus f)
 		mvaddch(get_max_y() - 1, 0, '>');
 		break;
 	case FocusContactList:
-		contactlist_draw();
+		empathy_contactlistwin_draw(list_store);
 		break;
 	}
 

@@ -18,15 +18,20 @@ def configure(conf):
     conf.check_header('ncursesw/panel.h')
     conf.check_header('ncursesw/ncurses.h')
     conf.check_header('readline/history.h')
-	
     conf.env['LIB_NCURSESW'] = "ncursesw"
     conf.env['LIBPATH_NCURSESW'] = '/usr/include'
 
     conf.env['LIB_PANEL'] = "panelw"
     conf.env['LIBPATH_PANEL'] = '/usr/include'
 
+    conf.env['LIB_HISTORY'] = "history"
+    conf.env['LIBPATH_HISTORY'] = '/usr/include'
+
     conf.env['LIB_READLINE'] = "readline"
     conf.env['LIBPATH_READLINE'] = '/usr/include'
+
+    conf.env['LIB_EMPATHY'] = "empathy"
+    conf.env['LIBPATH_EMPATHY'] = '/usr/include'
 
     conf.add_define('VERSION', VERSION)
     conf.add_define('MAJORMINOR', '.'.join(VERSION.split('.')[0:2]))
@@ -37,6 +42,10 @@ def configure(conf):
 
     conf.write_config_header('config.h')
     conf.env.append_value('CCFLAGS', '-I/usr/include/ncursesw')
+    conf.env.append_value('CCFLAGS', '-I/usr/include/telepathy-1.0')
+    conf.env.append_value('CCFLAGS', '-I/usr/include/libxml2')
+    conf.env.append_value('CCFLAGS', '-I/usr/include/evolution-data-server-1.10')
+    conf.env.append_value('CCFLAGS', '-g')
 
 def build(bld):
     bld.add_subdirs('src')

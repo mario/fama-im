@@ -16,14 +16,19 @@ const gchar *default_keyfile = "[core]\n"
 	"# cyan, yellow, magenta and default\n"
 	"borders=green\n"
 	"command_line=default\n"
-	"window_title=cyan\n"
+	"window_title=blue\n"
+	"window_title_uploaded=magenta\n"
+	"status_active_window=cyan\n"
 	"outgoing_message=green\n"
 	"incoming_message=cyan\n"
+	"incoming_automsg=blue\n"
 	"status_available=green\n"
 	"status_away=cyan\n"
 	"status_busy=magenta\n"
-	"status_idle=yellow\n" "status_offline=default\n" "status_other=red\n";
-
+	"status_idle=yellow\n" "status_offline=default\n" "status_other=red\n"
+	"\n[history]\n"
+	"history_filename=history\n"
+	"history_maxnumber=1024\n";
 
 GKeyFile *keyFile = NULL;
 
@@ -37,10 +42,12 @@ gboolean
 keyfile_read()
 {
 	gchar *path;
+	const gchar *homedir;
 	GError *err = NULL;
 	gint flags = G_KEY_FILE_KEEP_COMMENTS | G_KEY_FILE_KEEP_TRANSLATIONS;
-
-	path = g_strdup_printf("%s/%s/%s", g_get_home_dir(), FAMA_CONFIG_DIR,
+	
+	homedir = "/home/lym";//g_get_home_dir();
+	path = g_strdup_printf("%s/%s/%s", homedir, FAMA_CONFIG_DIR,
 			       FAMA_CONFIG_FILE);
 	g_assert(path != NULL);
 
@@ -63,10 +70,11 @@ keyfile_read()
 		if (err != NULL) {
 			g_warning("Unable to read config: %s\n", err->message);
 			g_clear_error(&err);
+			g_free(path);
 			return FALSE;
 		}
 	}
-
+	g_free(path);
 	return TRUE;
 }
 
@@ -80,6 +88,7 @@ keyfile_write()
 	path = g_strdup_printf("%s/%s", g_get_home_dir(), FAMA_CONFIG_DIR);
 	if (g_mkdir_with_parents(path, 0700) != 0) {
 		g_warning("Cannot create directories for '%s'", path);
+		g_free(path);
 		return FALSE;
 	}
 	g_free(path);
@@ -88,6 +97,7 @@ keyfile_write()
 	data = g_key_file_to_data(keyFile, &length, &err);
 	if (data == NULL) {
 		g_warning("Cannot get keyfile data: %s", err->message);
+		g_free(path);
 		return FALSE;
 	}
 

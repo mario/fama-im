@@ -1,9 +1,11 @@
 #include "common.h"
+#include "ui-window.h"
 #include <string.h>
 #include <stdlib.h>
+#include <glib/gprintf.h>
+#include "ui-history.h"
 
 GHashTable *table = NULL;
-
 
 gboolean command_func_window(gint argc, gchar ** argv);
 gboolean command_func_help(gint argc, gchar ** argv);
@@ -13,7 +15,13 @@ gboolean command_func_account(gint argc, gchar ** argv);
 gboolean command_func_contact(gint argc, gchar ** argv);
 gboolean command_func_status(gint argc, gchar ** argv);
 gboolean command_func_log(gint argc, gchar ** argv);
+gboolean command_func_history(gint argc, gchar ** argv);
 
+/** argc is number of arguments in a command line,
+ * argv is array of the arguments*/
+void command_hist_add(gint argc, gchar ** argv);
+/** load history setting in profile(keyfile)*/
+gboolean command_hist_loadprofile();
 /*
  * This function is for command_func_help()'s private use
  */
@@ -67,6 +75,7 @@ gboolean
 command_func_quit(gint argc, gchar ** argv)
 {
 	stop_main_loop();
+	famahistory_command_savesession();
 	return TRUE;
 }
 
@@ -132,6 +141,112 @@ command_func_window(gint argc, gchar ** argv)
 	return TRUE;
 }
 
+gboolean
+command_func_history(gint argc, gchar ** argv)
+{
+	gchar **infostring;
+	gchar *string, strtitle[256];
+	wchar_t *outbuf, wtitle[256];
+	gint mask = 0;
+	if (argc == 0)
+		return FALSE;
+	g_sprintf(strtitle, "History infomation : ");
+	if (argc == 1) {
+		infostring = famahistory_info_get(HISINFO_USAGE | HISINFO_MAXNUMBER | 
+			HISINFO_ENABLE | HISINFO_LISTNUM);
+
+		g_assert(infostring);
+		string = g_strjoinv("\n", infostring);
+		outbuf = g_new(wchar_t, strlen(string) + 1);
+
+		utf8_to_wchar(string, outbuf, strlen(string));
+		utf8_to_wchar(strtitle, wtitle, strlen(strtitle));
+		window_add_message(window_get_main(), 
+				   wtitle,
+				   A_BOLD, outbuf);
+
+		g_strfreev(infostring);
+		g_free(string);
+		g_free(outbuf);
+		return TRUE;
+	}
+
+	if (g_ascii_strcasecmp("maxnumber", argv[1]) == 0) {
+		if (argc == 3) {
+			gint max = atoi(argv[2]);
+			famahistory_setmax(max);
+			g_sprintf(strtitle, "History infomation : %s",
+				"Succeed in setting max number of history.");
+		} else 
+			mask |= HISINFO_USAGE;
+		mask |= HISINFO_MAXNUMBER;
+		infostring = famahistory_info_get(mask);
+		string = g_strjoinv("\n", infostring);
+		outbuf = g_new(wchar_t, strlen(string) + 1);
+		utf8_to_wchar(string, outbuf, strlen(string));
+		utf8_to_wchar(strtitle, wtitle, strlen(strtitle));
+		window_add_message(window_get_main(),
+				   wtitle, A_BOLD, outbuf);
+		g_strfreev(infostring);
+		g_free(string);
+		g_free(outbuf);
+		return TRUE;
+	}
+	if (g_ascii_strcasecmp("enable", argv[1]) == 0) {
+		if (argc == 3) {
+			gint enab = -1;
+			if (g_ascii_strcasecmp("on", argv[2]) == 0) {
+				enab = 1;
+			} else if (g_ascii_strcasecmp("off", argv[2]) == 0) {
+				enab = 0;
+			} else
+				mask |= HISINFO_USAGE;
+			if (enab >= 0) {
+				famahistory_enable(enab);
+				g_sprintf(strtitle, "History infomation : %s",
+					  "Succeed in setting of history enable flag.");
+			}
+		} else 
+			mask |= HISINFO_USAGE;
+		mask |= HISINFO_ENABLE;
+		infostring = famahistory_info_get(mask);
+		string = g_strjoinv("\n", infostring);
+		outbuf = g_new(wchar_t, strlen(string) + 1);
+		utf8_to_wchar(string, outbuf, strlen(string));
+		utf8_to_wchar(strtitle, wtitle, strlen(strtitle));
+		window_add_message(window_get_main(),
+				   wtitle, A_BOLD, outbuf);
+		g_strfreev(infostring);
+		g_free(string);
+		g_free(outbuf);
+		return TRUE;
+	}
+	if (g_ascii_strcasecmp("list", argv[1]) == 0) {
+		gint listnum;
+		g_sprintf(strtitle, "History infomation : has %d records",
+			  famahistory_number());
+		if (argc == 3) {
+			if (g_ascii_strcasecmp("all", argv[2]) == 0)
+				listnum = famahistory_number();
+			else
+				listnum = atoi(argv[2]);
+		} else { 
+			listnum = DEFAULTLISTNUMBER;
+		}
+		infostring = famahistory_info_getlist(listnum);
+		string = g_strjoinv("\n", infostring);
+		outbuf = g_new(wchar_t, strlen(string) + 1);
+		utf8_to_wchar(string, outbuf, strlen(string));
+		utf8_to_wchar(strtitle, wtitle, strlen(strtitle));
+		window_add_message(window_get_main(),
+				   wtitle, A_BOLD, outbuf);
+		g_strfreev(infostring);
+		g_free(string);
+		g_free(outbuf);
+		return TRUE;
+	}return TRUE;
+}
+
 /*
  * Add a new command
  */
@@ -156,6 +271,7 @@ command_init()
 	command_add("status", command_func_status);
 	command_add("contact", command_func_contact);
 	command_add("log", command_func_log);
+	command_add("history", command_func_history);
 }
 
 /*
@@ -175,6 +291,6 @@ command_execute(gint argc, gchar ** argv)
 		return FALSE;
 
 	func(argc, argv);
-
 	return TRUE;
 }
+

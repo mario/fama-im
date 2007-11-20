@@ -1,4 +1,6 @@
 #include "common.h"
+#include "ui-window.h"
+#include "empathy-contactliststore.h"
 
 
 gint max_x, max_y;
@@ -26,7 +28,6 @@ init_interface()
 
 	color_init();
 	commandline_init();
-	contactlist_init();
 
 	/*
 	 * Only create a new main-window if there is no
@@ -49,8 +50,8 @@ init_interface()
 void
 destroy_interface()
 {
-	contactlist_destroy();
-
+	empathy_contactlistwin_destroy();
+	window_destroy_all_windows();
 	erase();
 	refresh();
 	endwin();
@@ -68,7 +69,7 @@ draw_interface()
 	 */
 
 	attron(c->borders);
-	mvvline(0, max_x - contactlist_get_width(), 0, max_y);
+	mvvline(0, max_x - empathy_contactlistwin_get_width(), 0, max_y);
 
 	attron(A_REVERSE);
 	mvhline(0, 0, BORDER, max_x);
@@ -76,22 +77,23 @@ draw_interface()
 	mvaddwstr(0, (max_x - 12) / 2, L"F A M A  I M");
 	attroff(A_REVERSE | c->borders);
 
-	attron(A_UNDERLINE | A_BOLD | c->window_title);
-	mvhline(1, max_x - contactlist_get_width() + 1, ' ',
-		contactlist_get_width());
-	mvaddwstr(1, max_x - contactlist_get_width() + 2, L"Contacts");
-	attroff(A_UNDERLINE | A_BOLD | c->window_title);
+	attron(A_UNDERLINE | A_BOLD | c->status_active_window);
+	mvhline(1, max_x - empathy_contactlistwin_get_width() + 1, ' ',
+		empathy_contactlistwin_get_width());
+	mvaddwstr(1, max_x - empathy_contactlistwin_get_width() + 2, L"Contacts");
+	attroff(A_UNDERLINE | A_BOLD | c->status_active_window);
 
 	update_panels();
 	doupdate();
 
-	window_draw_title_bar();
+	//window_draw_title_bar();
+	window_draw_all_titlebars();
 	window_resize_all();
 
 	/*
 	 * Draw contact list 
 	 */
-	contactlist_draw();
+	empathy_contactlistwin_draw(list_store);
 
 	/*
 	 * Draw command-line

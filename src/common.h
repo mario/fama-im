@@ -10,8 +10,8 @@
 #include <ncurses.h>
 #include <panel.h>
 
-#include <tapioca/tpa-client.h>
-
+//#include <tapioca/tpa-client.h>
+#include "empathy-chat.h"
 /**
  * FamaWindowType enumeration.
  * Specifies the type of content of a window.
@@ -19,6 +19,7 @@
 typedef enum {
 	WindowTypeMain,
 	WindowTypeConversation,
+	WindowTypeGroupChat
 } FamaWindowType;
 
 
@@ -39,17 +40,8 @@ typedef struct {
 
 	gboolean is_updated; /**< True if window has unread messages */
 
-	TpaChannel *channel; /**< The channel associated with the window */
+	EmpathyChat *empathychat; /*< the chat object associated with the window*/
 } FamaWindow;
-
-/**
- * FamaConnection.
- */
-typedef struct {
-	TpaConnection *connection;
-	gchar *account;
-} FamaConnection;
-
 
 /**
  * FamaFocus enumeration.
@@ -78,11 +70,12 @@ typedef struct {
  * The contact-list contains an array of groups, which in turn
  * contain the actual items.
  */
+
 typedef struct _FamaContactListGroup {
 
-	TpaConnection *tpa_connection; /**< TpaConnection associated with the group */
+//	TpaConnection *tpa_connection; /**< TpaConnection associated with the group */
 
-	TpaContactList *tpa_contactlist; /**< TpaContactList associated with the group */
+//	TpaContactList *tpa_contactlist; /**< TpaContactList associated with the group */
 
 	GPtrArray *items; /**< An array of FamaContactListItem's */
 } FamaContactListGroup;
@@ -95,7 +88,7 @@ typedef struct _FamaContactListItem {
 
 	FamaContactListGroup *parent_group; /**< Parent group of the item */
 
-	TpaContact *contact; /**< TpaContact associated with the item */
+//	TpaContact *contact; /**< TpaContact associated with the item */
 
 	wchar_t *text; /**< Text displayed in the contact-list */
 
@@ -115,9 +108,15 @@ typedef struct {
 
 	gint window_title; /**< Title of the conversation windows */
 
+	gint window_title_uploaded; /**< Title of the conversation windows is uploaded*/
+
+	gint status_active_window; /** The active title of conversation windows */
+
 	gint outgoing_message; /**< Outgoing message title */
 
 	gint incoming_message; /**< Incoming message title */
+
+	gint incoming_automsg; /** show the auto reply message*/
 
 	gint status_available; /** Contact-list status 'available' */
 
@@ -130,6 +129,8 @@ typedef struct {
 	gint status_offline; /** Contact-list status 'offline' */
 
 	gint status_other; /** Contact-list other or unrecognized statuses */
+	
+	gint status_group; /** group of COntact-list*/
 } ColorSettings;
 
 /**
@@ -155,6 +156,7 @@ int get_max_x();
 #define BORDER ' '
 
 /* Contactlist.c */
+/**NOTE: these are moved to ui-window.h file
 void contactlist_init();
 void contactlist_set_width(gint);
 gint contactlist_get_width();
@@ -171,7 +173,7 @@ FamaContactListItem *contactlist_get_selected();
 FamaContactListGroup *contactlist_get_group(TpaConnection *);
 void contactlist_reload_from_server(TpaConnection *);
 void contactlist_remove_group(FamaContactListGroup *);
-
+*/
 
 
 /* Utf8.c */
@@ -200,6 +202,7 @@ wchar_t *commandline_get_buffer();
 void commandline_draw();
 void commandline_move_cursor(gint);
 void commandline_delete();
+void commandline_set_cmd(gchar *line);
 
 /* Keyfile.c */
 gboolean keyfile_read();
@@ -210,12 +213,14 @@ GKeyFile *keyfile_get();
 #define FAMA_LOGFILE_DIR                "logs"
 #define FAMA_CONFIG_FILE                "config"
 #define FAMA_ACCOUNTS			"accounts"
+#define FAMA_HISTORY_FILE		"history"
 
 /* Window.c */
-FamaWindow *window_new(FamaWindowType);
+/*FamaWindow *window_new(FamaWindowType);
 FamaWindow *window_get_current();
 FamaWindow *window_get_index(gint);
-FamaWindow *window_find_channel(TpaChannel * c);
+//FamaWindow *window_find_channel(TpaChannel * c);
+FamaWindow *window_find_empathychat(EmpathyChat *chat);
 void window_append_rows(FamaWindow *, GPtrArray *, gint);
 void window_add_message(FamaWindow *, wchar_t *, gint, wchar_t *);
 void window_set_current(FamaWindow *);
@@ -227,36 +232,44 @@ gchar *window_create_status_string();
 gint get_window_index(FamaWindow *);
 
 #define window_get_main() window_get_index(0)
-
+*/
 /* Log.c */
 void log_init();
 void log_get_time(gchar *, gsize);
-
+void fama_debug_set_log_file(const gchar *debugfile);
+void fama_debug(const gchar *domain, const gchar *msg, ...);
 /* Command.c */
 void command_init();
 void command_add(gchar *, CommandFunc);
 gboolean command_execute(gint, gchar **);
+gboolean command_hist_init();
+gboolean commandline_hist_loadpre();
+gboolean commandline_hist_loadnext();
+
+/* history*/
+/** default list number of history*/
+#define DEFAULTLISTNUMBER	10
 
 /* Color.c */
 void color_init();
 ColorSettings *color_get();
 
 /* Connection.c */
-void connection_disconnect_all();
+/*void connection_disconnect_all();
 TpaConnection *connection_connect(gchar *, gchar *);
 gchar *connection_get_account_from_connection(TpaConnection *);
 TpaConnection *connection_get_connection_from_account(gchar *);
 GPtrArray *connection_get_connections();
-
+*/
 /* Factory-manager.c */
-TpaManagerFactory *manager_factory_get();
+/*TpaManagerFactory *manager_factory_get();
 void manager_factory_init();
 void manager_factory_destroy();
-
+*/
 /* Channel.c */
-void channel_send_message(TpaTextChannel *, gchar *);
+/*void channel_send_message(TpaTextChannel *, gchar *);
 void channel_created_cb(TpaConnection * conn, TpaChannel * channel);
-
+*/
 /* Clock.c */
 gboolean clock_cb(gpointer data);
 const gchar *clock_get_time();
@@ -268,16 +281,16 @@ void statusbar_draw();
 int mvwaddwstr_with_maxwidth(WINDOW *, int, int, const wchar_t *, int);
 
 /* Contact.c */
-gboolean contact_add(gchar *, gchar *);
+/*gboolean contact_add(gchar *, gchar *);
 gboolean contact_remove(gchar *, gchar *);
-gboolean contact_authorize(gchar *, gchar *);
+gboolean contact_authorize(gchar *, gchar *);*/
 
 /* Account.c */
-gboolean account_init();
+/*gboolean account_init();
 void account_destroy();
 gchar **account_get_names();
 gboolean account_get_profile(gchar *, TpaProfile **);
-void account_add(gchar *, gchar *);
+void account_add(gchar *, gchar *);*/
 
 /* Focus.c */
 void focus_set(FamaFocus);

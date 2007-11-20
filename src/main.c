@@ -6,15 +6,19 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
+#include "ui-history.h"
+#include "mc-accounts.h"
+#include <libempathy/empathy-contact-list.h>
+#include <libempathy/empathy-contact-manager.h>
+#include "empathy-contactliststore.h"
 GMainLoop *loop;
+EmpathyContactListStore *list_store;
 
 int
 main(int argc, char **argv)
 {
 	g_type_init();
-
-	tpa_thread_init(FALSE);
+//	empathy_debug_set_log_file_from_env();
 
 	loop = g_main_loop_new(NULL, FALSE);
 
@@ -30,12 +34,10 @@ main(int argc, char **argv)
 	/*
 	 * Kill the memory!!!!
 	 */
+	mc_uninit();
 	destroy_interface();
-	connection_disconnect_all();
-	account_destroy();
-	manager_factory_destroy();
-	contactlist_free();
-	tpa_thread_shutdown(FALSE);
+	
+	g_object_unref(list_store);
 
 	return 0;
 }
@@ -54,7 +56,7 @@ init_all()
 	gint a;
 	gchar *c;
 	const gchar *charset;
-
+	EmpathyContactList       *contactlist;
 	/*
 	 * Set locale
 	 */
@@ -98,7 +100,7 @@ init_all()
 
 		g_clear_error(&err);
 	} else {
-		contactlist_set_width(a);
+		empathy_contactlistwin_set_width(a);
 	}
 
 	g_get_charset(&charset);
@@ -114,7 +116,7 @@ init_all()
 		set_interface_encoding(c);
 	}
 	g_message("Using charset '%s'", get_interface_encoding());
-
+	g_free(c);
 	c = g_key_file_get_string(keyfile_get(), "core",
 				  "redirect_stderr", &err);
 	if (err) {
@@ -130,7 +132,7 @@ init_all()
 		g_freopen(c, "w", stderr);
 	}
 
-
+	g_free(c);
 	c = g_key_file_get_string(keyfile_get(), "core", "logging", &err);
 	if (err != NULL) {
 		if (err->code == G_KEY_FILE_ERROR_INVALID_VALUE)
@@ -140,17 +142,17 @@ init_all()
 	} else {
 		set_logging(c);
 	}
+	g_free(c);
+
+        contactlist = EMPATHY_CONTACT_LIST (empathy_contact_manager_new ());
+        list_store = empathy_contact_list_store_new (contactlist);
+	g_object_unref(contactlist);
 
 	/*
-	 * Initialize manager factory
+	 * initialize the mission control
 	 */
-	manager_factory_init();
 
-	/*
-	 * Load account file
-	 */
-	account_init();
-
+	mc_init();
 	/*
 	 * Initialize the interface
 	 */
@@ -180,6 +182,12 @@ init_all()
 	command_init();
 
 	/*
+	 * Initialize history interface
+	 */ 
+	
+	famahistory_command_init();
+
+	/*
 	 * Call stdin_handle_input when there's input from stdin
 	 */
 
@@ -199,3 +207,4 @@ init_all()
 
 	return TRUE;
 }
+
