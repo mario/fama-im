@@ -17,6 +17,11 @@ def configure(conf):
     conf.check_header('ncursesw/panel.h')
     conf.check_header('ncursesw/ncurses.h')
     conf.check_header('readline/history.h')
+    conf.check_header('dbus/dbus-glib.h')
+
+    conf.env['LIB_DBUSGLIB'] = "dbus-glib'
+    conf.env['LIBPATH_DBUSGLIB' = '/usr/include'
+
     conf.env['LIB_NCURSESW'] = "ncursesw"
     conf.env['LIBPATH_NCURSESW'] = '/usr/include'
 
