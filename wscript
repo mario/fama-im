@@ -19,9 +19,6 @@ def configure(conf):
     conf.check_header('readline/history.h')
     conf.check_header('dbus/dbus-glib.h')
 
-    conf.env['LIB_DBUSGLIB'] = "dbus-glib'
-    conf.env['LIBPATH_DBUSGLIB' = '/usr/include'
-
     conf.env['LIB_NCURSESW'] = "ncursesw"
     conf.env['LIBPATH_NCURSESW'] = '/usr/include'
 
@@ -45,6 +42,9 @@ def configure(conf):
     conf.env.append_value('CCFLAGS', '-DHAVE_CONFIG_H')
 
     conf.write_config_header('config.h')
+    conf.env.append_value('CCFLAGS', '-I/usr/include/dbus-1.0')
+    conf.env.append_value('CCFLAGS', '-I/usr/include/glib-2.0')
+
     conf.env.append_value('CCFLAGS', '-I/usr/include/ncursesw')
     conf.env.append_value('CCFLAGS', '-I/usr/include/telepathy-1.0')
     conf.env.append_value('CCFLAGS', '-I/usr/include/libxml2')
