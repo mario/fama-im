@@ -14,10 +14,10 @@ def configure(conf):
 
     conf.check_pkg('glib-2.0', destvar='GLIB', vnum='2.10.0')
     conf.check_pkg('gobject-2.0', destvar='GOBJECT', vnum='2.10.0')
+    conf.check_pkg('libempathy', destvar='EMPATHY')
     conf.check_header('ncursesw/panel.h')
     conf.check_header('ncursesw/ncurses.h')
     conf.check_header('readline/history.h')
-    conf.check_header('dbus/dbus-glib.h')
 
     conf.env['LIB_NCURSESW'] = "ncursesw"
     conf.env['LIBPATH_NCURSESW'] = '/usr/include'
@@ -31,9 +31,6 @@ def configure(conf):
     conf.env['LIB_READLINE'] = "readline"
     conf.env['LIBPATH_READLINE'] = '/usr/include'
 
-    conf.env['LIB_EMPATHY'] = "empathy"
-    conf.env['LIBPATH_EMPATHY'] = '/usr/include'
-
     conf.add_define('VERSION', VERSION)
     conf.add_define('MAJORMINOR', '.'.join(VERSION.split('.')[0:2]))
     
@@ -42,13 +39,8 @@ def configure(conf):
     conf.env.append_value('CCFLAGS', '-DHAVE_CONFIG_H')
 
     conf.write_config_header('config.h')
-    conf.env.append_value('CCFLAGS', '-I/usr/include/dbus-1.0')
-    conf.env.append_value('CCFLAGS', '-I/usr/include/glib-2.0')
 
     conf.env.append_value('CCFLAGS', '-I/usr/include/ncursesw')
-    conf.env.append_value('CCFLAGS', '-I/usr/include/telepathy-1.0')
-    conf.env.append_value('CCFLAGS', '-I/usr/include/libxml2')
-    conf.env.append_value('CCFLAGS', '-I/usr/include/evolution-data-server-1.10')
     conf.env.append_value('CCFLAGS', '-g')
 
 def build(bld):
