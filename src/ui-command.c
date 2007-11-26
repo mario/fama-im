@@ -13,7 +13,6 @@ gboolean command_func_connect(gint argc, gchar ** argv);
 gboolean command_func_quit(gint argc, gchar ** argv);
 gboolean command_func_account(gint argc, gchar ** argv);
 gboolean command_func_contact(gint argc, gchar ** argv);
-gboolean command_func_status(gint argc, gchar ** argv);
 gboolean command_func_log(gint argc, gchar ** argv);
 gboolean command_func_history(gint argc, gchar ** argv);
 
