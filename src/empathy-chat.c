@@ -257,7 +257,7 @@ chat_message_received_cb (EmpathyTpChat  *tp_chat,
 	EmpathyChatPriv *priv;
 	EmpathyContact  *sender;
 	EmpathyTime      timestamp;
-	FamaEmapthyMessageType messagetype;
+	FamaEmpathyMessageType messagetype;
 	EmpathyMessageType empathymessagetype;
 	priv = GET_PRIV (chat);
 
