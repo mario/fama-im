@@ -110,34 +110,6 @@ contactlist_draw()
 	doupdate();
 }
 
-gint
-sort_compare_func(gconstpointer a, gconstpointer b)
-{
-	TpaContactPresence a_pres, b_pres;
-	FamaContactListItem *a_item, *b_item;
-
-	a_item = *(FamaContactListItem **) a;
-	b_item = *(FamaContactListItem **) b;
-
-	if (a_item->contact == NULL)
-		return -1;
-	else if (b_item->contact == NULL)
-		return 1;
-
-	a_pres = tpa_contact_base_get_presence(TPA_CONTACT_BASE
-					       (a_item->contact));
-	b_pres = tpa_contact_base_get_presence(TPA_CONTACT_BASE
-					       (b_item->contact));
-
-	g_assert(a_pres > 0 && b_pres > 0);
-
-	if (b_pres == TPA_PRESENCE_OFFLINE)
-		return -1;
-	else if (a_pres > b_pres || a_pres == TPA_PRESENCE_OFFLINE)
-		return 1;
-
-	return -1;
-}
 
 
 void
@@ -205,163 +177,9 @@ contactlist_free()
 }
 
 
-FamaContactListGroup *
-contactlist_get_group(TpaConnection * connection)
-{
-	FamaContactListGroup *group = NULL;
-	gint i;
-
-	/*
-	 * Find the group that corresponds with the
-	 * connection object.
-	 */
-	for (i = 0; i < groups->len; i++) {
-		group = g_ptr_array_index(groups, i);
-
-		if (group->tpa_connection == connection)
-			break;
-
-		group = NULL;
-	}
-	return group;
-}
-
-void
-contactlist_presence_updated_cb(TpaContact * contact,
-				TpaContactPresence presence, gchar * message)
-{
-	FamaContactListGroup *group = NULL;
-	FamaContactListItem *item = NULL;
-	gint i, j;
-
-	for (i = 0; i < groups->len; i++) {
-		group = g_ptr_array_index(groups, i);
-		for (j = 0; j < group->items->len; j++) {
-			item = g_ptr_array_index(group->items, j);
-			if (item->contact == contact) {
-				item->attr =
-					contactlist_presence_to_attr(presence);
-				break;
-			}
-		}
-	}
-
-	contactlist_sort();
-	contactlist_draw();
-}
-
-void
-contactlist_alias_changed_cb(TpaContact * contact, gchar * alias)
-{
-	FamaContactListGroup *group = NULL;
-	FamaContactListItem *item = NULL;
-	gint i, j;
-
-	for (i = 0; i < groups->len; i++) {
-		group = g_ptr_array_index(groups, i);
-		for (j = 0; j < group->items->len; j++) {
-			item = g_ptr_array_index(group->items, j);
-			if (item->contact == contact) {
-				g_free(item->text);
-				item->text = g_new(wchar_t, strlen(alias) + 1);
-				utf8_to_wchar(alias, item->text, strlen(alias));
-				break;
-			}
-		}
-	}
-
-	contactlist_draw();
-}
 
 
 
-void
-contactlist_add_contact(FamaContactListGroup * group, TpaContact * contact)
-{
-	TpaContactPresence contact_presence;
-	FamaContactListItem *item = NULL;
-	const gchar *contact_alias;
-
-	item = g_new(FamaContactListItem, 1);
-
-	g_signal_connect(G_OBJECT(contact), "presence-updated",
-			 G_CALLBACK(contactlist_presence_updated_cb), NULL);
-
-	g_signal_connect(G_OBJECT(contact), "alias-changed",
-			 G_CALLBACK(contactlist_alias_changed_cb), NULL);
-
-	contact_alias = tpa_contact_base_get_alias(TPA_CONTACT_BASE(contact));
-	contact_presence =
-		tpa_contact_base_get_presence(TPA_CONTACT_BASE(contact));
-
-	item->text = g_new(wchar_t, strlen(contact_alias) + 1);
-	utf8_to_wchar(contact_alias, item->text, strlen(contact_alias));
-
-	item->contact = contact;
-	item->parent_group = group;
-	item->attr = contactlist_presence_to_attr(contact_presence);
-
-	g_ptr_array_add(group->items, item);
-}
-
-void
-contactlist_authorization_requested_cb(TpaContactList * list,
-				       TpaContact * contact)
-{
-	const gchar *uri;
-
-	uri = tpa_channel_target_get_uri(TPA_CHANNEL_TARGET(contact));
-	g_message("%s has requested your authorization", uri);
-}
-
-
-void
-contactlist_subscription_accepted_cb(TpaContactList * list,
-				     TpaContact * contact)
-{
-	FamaContactListGroup *group;
-	gint i;
-
-	for (i = 0; i < groups->len; i++) {
-		group = g_ptr_array_index(groups, i);
-
-		if (group->tpa_contactlist == list)
-			break;
-
-		group = NULL;
-	}
-
-	if (group)
-		contactlist_add_contact(group, contact);
-	else
-		g_warning("Accepted subscription on non-existant connection?!");
-}
-
-
-FamaContactListGroup *
-contactlist_add_group(TpaConnection * connection, TpaContactList * contactlist,
-		      const gchar * title)
-{
-	FamaContactListItem *item;
-	FamaContactListGroup *group;
-
-	group = g_new(FamaContactListGroup, 1);
-	group->tpa_connection = connection;
-	group->tpa_contactlist = contactlist;
-	group->items = g_ptr_array_new();
-
-	item = g_new(FamaContactListItem, 1);
-	item->contact = NULL;
-
-	item->text = g_new(wchar_t, strlen(title) + 1);
-	utf8_to_wchar(title, item->text, strlen(title));
-
-	item->attr = A_BOLD | A_UNDERLINE;
-	g_ptr_array_add(group->items, item);
-	g_ptr_array_add(groups, group);
-
-	return group;
-}
 
 gint
 contactlist_count_rows()
@@ -399,29 +217,6 @@ contactlist_scroll(gint m)
 		contactlist_draw();
 }
 
-guint
-contactlist_presence_to_attr(TpaContactPresence p)
-{
-	ColorSettings *c = color_get();
-
-	switch (p) {
-	case TPA_PRESENCE_OFFLINE:
-	case TPA_PRESENCE_HIDDEN:
-		return c->status_offline;
-	case TPA_PRESENCE_AVAILABLE:
-		return c->status_available;
-	case TPA_PRESENCE_AWAY:
-		return c->status_away;
-	case TPA_PRESENCE_XA:
-		return c->status_idle;
-	case TPA_PRESENCE_BUSY:
-		return c->status_busy;
-	default:
-		break;
-	}
-
-	return c->status_other;
-}
 
 FamaContactListItem *
 contactlist_get_selected()
@@ -451,37 +246,4 @@ contactlist_get_selected()
 	return item;
 }
 
-void
-contactlist_reload_from_server(TpaConnection * conn)
-{
-	FamaContactListGroup *group;
-	TpaContactList *list;
-	GPtrArray *contacts;
-	TpaContact *contact;
-	gchar *account;
-	gint i;
 
-	group = contactlist_get_group(conn);
-	if (group)
-		contactlist_remove_group(group);
-
-	list = tpa_connection_get_contactlist(conn);
-	contacts = tpa_contact_list_get_known(list);
-
-	g_signal_connect(G_OBJECT(list), "authorization-requested",
-			 G_CALLBACK
-			 (contactlist_authorization_requested_cb), NULL);
-
-	g_signal_connect(G_OBJECT(list), "subscription-accepted",
-			 G_CALLBACK
-			 (contactlist_subscription_accepted_cb), NULL);
-
-	account = connection_get_account_from_connection(conn);
-	group = contactlist_add_group(conn, list, account);
-
-	for (i = 0; i < contacts->len; i++) {
-		contact = g_ptr_array_index(contacts, i);
-		contactlist_add_contact(group, contact);
-	}
-
-}
