@@ -267,7 +267,6 @@ command_init()
 	command_add("window", command_func_window);
 	command_add("connect", command_func_connect);
 	command_add("account", command_func_account);
-	command_add("status", command_func_status);
 	command_add("contact", command_func_contact);
 	command_add("log", command_func_log);
 	command_add("history", command_func_history);
