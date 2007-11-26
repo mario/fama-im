@@ -55,7 +55,7 @@ typedef enum {
 	EmpathyMessageAutoReply,
 	EmpathyMessageSent,
 	EmpathyMessageError,
-} FamaEmapthyMessageType;
+} FamaEmpathyMessageType;
 
 static void             empathy_chat_class_init           (EmpathyChatClass              *klass);
 static void             empathy_chat_init                 (EmpathyChat                   *chat);
@@ -85,7 +85,7 @@ static void             chat_state_changed_cb             (EmpathyTpChat        
 static void             chat_add_logs                     (EmpathyChat                   *chat);
 static gboolean         chat_scroll_down_idle_func        (EmpathyChat                   *chat);
 void                    empathy_message_add_text_message  (EmpathyChat   *chat, EmpathyMessage  *msg,  
-			                                   FamaEmapthyMessageType type);
+			                                   FamaEmpathyMessageType type);
 
 enum {
 	COMPOSING,
@@ -894,7 +894,7 @@ finished:
 
 void
 empathy_message_add_text_message(EmpathyChat   *chat, EmpathyMessage  *msg,  
-			 FamaEmapthyMessageType type)
+			 FamaEmpathyMessageType type)
 {
 	ColorSettings *c;
 	FamaWindow *win;
