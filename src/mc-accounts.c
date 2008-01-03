@@ -186,8 +186,8 @@ mc_get_account_names()
 			g_sprintf(statusstr, "%s", "TP_CONN_STATUS_CONNECTING"); break;
 		case TP_CONN_STATUS_DISCONNECTED:
 			g_sprintf(statusstr, "%s", "TP_CONN_STATUS_DISCONNECTED"); break;
-		case NUM_TP_CONN_STATUSES: 
-			g_sprintf(statusstr, "%s", "NUM_TP_CONN_STATUSES"); break;
+		case NUM_TP_CONNECTION_STATUSES:
+			g_sprintf(statusstr, "%s", "NUM_TP_CONNECTION_STATUSES"); break;
 		}
 
 		params = mc_account_get_params (account);
