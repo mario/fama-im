@@ -395,13 +395,9 @@ static guint
 empathy_contactlist_presence_to_attr(EmpathyContact *contact)
 {
 	ColorSettings *c = color_get();
-	EmpathyPresence *presence;
 	McPresence state;
-	presence = empathy_contact_get_presence (EMPATHY_CONTACT(contact));
-	if(!presence)
-		return c->status_offline;
 
-	state = empathy_presence_get_state (presence);
+	state = empathy_contact_get_presence(contact);
 	switch (state) {
 	case MC_PRESENCE_AVAILABLE:
 		return c->status_available;
